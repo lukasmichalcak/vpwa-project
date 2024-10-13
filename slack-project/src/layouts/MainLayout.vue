@@ -37,7 +37,7 @@
             <q-icon name="public" />
           </q-item-section>
           <q-item-section>
-            Server1
+            Channel1
           </q-item-section>
         </q-item>
         <q-item clickable v-ripple>
@@ -45,7 +45,7 @@
             <q-icon name="public" />
           </q-item-section>
           <q-item-section>
-            Server2
+            Channel2
           </q-item-section>
         </q-item>
       </q-list>
@@ -82,7 +82,7 @@
         rounded
         filled
         v-model="text"
-        label="Command line"
+        label="Cmd"
         label-color="white"
         input-class="custom-input-text"
       />
