@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="hHh LpR lFr">
+  <q-layout view="hHh lpR lFr">
     <q-header reveal elevated class="bg-primary text-white">
       <q-toolbar>
         <q-btn
@@ -17,41 +17,15 @@
           </q-avatar>
           SKRUPULUS
         </q-toolbar-title>
-
-        <q-btn
-          dense
-          flat
-          round
-          icon="menu"
-          v-if="$q.screen.lt.md"
-          @click="toggleRightDrawer"
-        />
       </q-toolbar>
     </q-header>
 
     <q-drawer show-if-above v-model="leftDrawerOpen" side="left" bordered>
       <!-- Left drawer content -->
-      <q-list>
-        <q-item clickable v-ripple>
-          <q-item-section avatar>
-            <q-icon name="public" />
-          </q-item-section>
-          <q-item-section>
-            Server1
-          </q-item-section>
-        </q-item>
-        <q-item clickable v-ripple>
-          <q-item-section avatar>
-            <q-icon name="public" />
-          </q-item-section>
-          <q-item-section>
-            Server2
-          </q-item-section>
-        </q-item>
-      </q-list>
+      <ServerListComponent />
     </q-drawer>
 
-    <q-drawer show-if-above v-model="rightDrawerOpen" side="right" bordered>
+    <q-drawer v-model="rightDrawerOpen" side="right" bordered>
       <!-- Right drawer content -->
       <q-list>
         <q-item clickable v-ripple>
@@ -82,7 +56,7 @@
         rounded
         filled
         v-model="text"
-        label="Command line"
+        label="Cmd"
         label-color="white"
         input-class="custom-input-text"
       />
@@ -91,10 +65,16 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
+import { useQuasar } from 'quasar'
+import ServerListComponent from 'components/ServerListComponent.vue'
 
 export default {
+  components: {
+    ServerListComponent
+  },
   setup () {
+    const $q = useQuasar()
     const leftDrawerOpen = ref(false)
     const rightDrawerOpen = ref(false)
     const text = ref('')
@@ -104,8 +84,22 @@ export default {
     }
 
     const toggleRightDrawer = () => {
-      rightDrawerOpen.value = !rightDrawerOpen.value
+      if ($q.screen.lt.md) {
+        rightDrawerOpen.value = false
+      } else if (text.value === '/list') {
+        rightDrawerOpen.value = true
+      } else {
+        rightDrawerOpen.value = false
+      }
     }
+
+    watch(text, () => {
+      toggleRightDrawer()
+    })
+
+    watch(() => $q.screen.width, () => {
+      toggleRightDrawer()
+    })
 
     return {
       leftDrawerOpen,
