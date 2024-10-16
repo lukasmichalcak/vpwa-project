@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="hHh LpR lFr">
+  <q-layout view="hHh lpR lFr">
     <q-header reveal elevated class="bg-primary text-white">
       <q-toolbar>
         <q-btn
@@ -17,41 +17,17 @@
           </q-avatar>
           SKRUPULUS
         </q-toolbar-title>
-
-        <q-btn
-          dense
-          flat
-          round
-          icon="menu"
-          v-if="$q.screen.lt.md"
-          @click="toggleRightDrawer"
-        />
       </q-toolbar>
     </q-header>
 
     <q-drawer show-if-above v-model="leftDrawerOpen" side="left" bordered>
       <!-- Left drawer content -->
-      <q-list>
-        <q-item clickable v-ripple>
-          <q-item-section avatar>
-            <q-icon name="public" />
-          </q-item-section>
-          <q-item-section>
-            Channel1
-          </q-item-section>
-        </q-item>
-        <q-item clickable v-ripple>
-          <q-item-section avatar>
-            <q-icon name="public" />
-          </q-item-section>
-          <q-item-section>
-            Channel2
-          </q-item-section>
-        </q-item>
-      </q-list>
+
+      <ServerListComponent />
+
     </q-drawer>
 
-    <q-drawer show-if-above v-model="rightDrawerOpen" side="right" bordered>
+    <q-drawer v-model="rightDrawerOpen" side="right" bordered>
       <!-- Right drawer content -->
       <q-list>
         <q-item clickable v-ripple>
@@ -78,13 +54,10 @@
     </q-page-container>
 
     <q-footer elevated>
-      <q-input
-        rounded
-        filled
-        v-model="text"
-        label="Cmd"
-        label-color="white"
-        input-class="custom-input-text"
+      <CommandLineComponent
+        :rightDrawerOpen="rightDrawerOpen"
+        @toggleRightDrawer="toggleRightDrawer"
+
       />
     </q-footer>
   </q-layout>
@@ -92,8 +65,14 @@
 
 <script>
 import { ref } from 'vue'
+import ServerListComponent from 'components/ServerListComponent.vue'
+import CommandLineComponent from 'src/components/CommandLineComponent.vue';
 
 export default {
+  components: {
+    ServerListComponent,
+    CommandLineComponent
+  },
   setup () {
     const leftDrawerOpen = ref(false)
     const rightDrawerOpen = ref(false)
@@ -107,6 +86,9 @@ export default {
       rightDrawerOpen.value = !rightDrawerOpen.value
     }
 
+
+
+
     return {
       leftDrawerOpen,
       rightDrawerOpen,
@@ -118,8 +100,3 @@ export default {
 }
 </script>
 
-<style lang="scss">
-.custom-input-text {
-  color: white;
-}
-</style>
