@@ -18,12 +18,18 @@ const actions: ActionTree<ExampleStateInterface, StateInterface> = {
   },
   
   register({ commit }, { firstName, lastName, username, email, password }) {
-    if (!firstName || !lastName || !username || !email || !password) {
-      commit('SET_REGISTRATION_ERROR', 'All fields must be filled');
-    } else {
-      commit('SET_USER', { username });
-      commit('SET_REGISTRATION_ERROR', '');
-    }
+    return new Promise<void>((resolve, reject) => {
+      if (!firstName || !lastName || !username || !email || !password) {
+        commit('SET_REGISTRATION_ERROR', 'All fields must be filled');
+        reject(new Error('Fields missing'));
+      } else {
+        commit('SET_USER', { username });
+        // will handle password later, probably will commit a hash
+        // will handle other setters later when relevant
+        commit('SET_REGISTRATION_ERROR', '');
+        resolve();
+      }
+    });
   }
 };
 

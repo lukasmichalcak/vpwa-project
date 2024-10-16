@@ -16,9 +16,8 @@
         <router-view />
         </q-page-container>
 
-
             <q-form class="flex flex-center" style="min-height: 90vh;">
-                <div class="q-gutter-md" style="max-width: 300px; width: 100%;">
+                <div class="q-gutter-md" style="max-width: 300px; width: 100%;" @submit.prevent="onSubmit">
                     <div class="text-center" style="font-size: 40px; font-weight: bold;">Register</div>
 
                     <q-separator color="dark" size="8px" spaced />
@@ -37,8 +36,10 @@
                         </template>
                     </q-input>
 
+                    <q-banner v-if="registrationError" color="negative">{{ registrationError }}</q-banner>
+
                     <div class="row items-center justify-end q-mt-md no-wrap">
-                        <q-btn label="Register" class="bg-primary text-white" />
+                        <q-btn label="Register" class="bg-primary text-white" @click="onSubmit" />
                     </div>
 
                 </div>
@@ -47,6 +48,8 @@
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex';
+
 export default {
   data() {
     return {
@@ -59,12 +62,23 @@ export default {
     }
   },
 
+  computed: {
+    ...mapGetters('module-example', ['registrationError'])
+  },
+
   methods: {
+    ...mapActions('module-example', ['register']),
+
     togglePasswordVisibility() {
         this.visiblePassword = !this.visiblePassword;
     },
     async onSubmit(){
-
+      this.register({ firstName: this.firstName, lastName: this.lastName, username: this.username, email: this.email, password: this.password }).then(() => {
+        this.$router.push('/');
+      })
+      .catch(error => {
+        console.error('Registration failed:', error);
+      });
     }
   }
 

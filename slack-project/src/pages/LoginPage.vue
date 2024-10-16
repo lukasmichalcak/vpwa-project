@@ -17,7 +17,7 @@
         </q-page-container>
 
         <q-form class="flex flex-center" style="min-height: 90vh;">
-            <div class="q-gutter-md" style="max-width: 300px; width: 100%;"  @submit.prevent="onSubmit">
+            <div class="q-gutter-md" style="max-width: 300px; width: 100%;" @submit.prevent="onSubmit">
                 <div class="text-center" style="font-size: 40px; font-weight: bold;">Login</div>
 
                 <q-separator color="dark" size="8px" spaced />
@@ -67,7 +67,7 @@ export default {
         this.visiblePassword = !this.visiblePassword;
     },
     
-    onSubmit() {
+    async onSubmit() {
       this.login({ username: this.username, password: this.password }).then(() => {
         this.$router.push('/');
       })
