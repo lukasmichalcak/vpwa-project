@@ -52,29 +52,25 @@
     </q-page-container>
 
     <q-footer elevated>
-      <q-input
-        rounded
-        filled
-        v-model="text"
-        label="Cmd"
-        label-color="white"
-        input-class="custom-input-text"
+      <CommandLineComponent
+        :rightDrawerOpen="rightDrawerOpen"
+        @toggleRightDrawer="toggleRightDrawer"
       />
     </q-footer>
   </q-layout>
 </template>
 
 <script>
-import { ref, watch } from 'vue'
-import { useQuasar } from 'quasar'
+import { ref } from 'vue'
 import ServerListComponent from 'components/ServerListComponent.vue'
+import CommandLineComponent from 'src/components/CommandLineComponent.vue';
 
 export default {
   components: {
-    ServerListComponent
+    ServerListComponent,
+    CommandLineComponent
   },
   setup () {
-    const $q = useQuasar()
     const leftDrawerOpen = ref(false)
     const rightDrawerOpen = ref(false)
     const text = ref('')
@@ -84,22 +80,11 @@ export default {
     }
 
     const toggleRightDrawer = () => {
-      if ($q.screen.lt.md) {
-        rightDrawerOpen.value = false
-      } else if (text.value === '/list') {
-        rightDrawerOpen.value = true
-      } else {
-        rightDrawerOpen.value = false
-      }
+      rightDrawerOpen.value = !rightDrawerOpen.value
     }
 
-    watch(text, () => {
-      toggleRightDrawer()
-    })
 
-    watch(() => $q.screen.width, () => {
-      toggleRightDrawer()
-    })
+
 
     return {
       leftDrawerOpen,
@@ -112,8 +97,3 @@ export default {
 }
 </script>
 
-<style lang="scss">
-.custom-input-text {
-  color: white;
-}
-</style>
