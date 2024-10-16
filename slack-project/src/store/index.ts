@@ -6,6 +6,7 @@ import {
   Store as VuexStore,
   useStore as vuexUseStore,
 } from 'vuex'
+import moduleExample from './module-example'
 
 // import example from './module-example'
 // import { ExampleStateInterface } from './module-example/state';
@@ -48,6 +49,7 @@ export default store(function (/* { ssrContext } */) {
   const Store = createStore<StateInterface>({
     modules: {
       // example
+      'module-example': moduleExample,
     },
 
     // enable strict mode (adds overhead!)
