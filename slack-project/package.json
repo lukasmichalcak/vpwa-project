@@ -2,8 +2,8 @@
   "name": "slack-project",
   "version": "0.0.1",
   "description": "Our Slack clone",
-  "productName": "Quasar App",
-  "author": "Lukasmichalcak <lukasmichalcak04gmail.com>",
+  "productName": "Skrupulus",
+  "author": "lukasmichalcak <xmichalcak@stuba.sk>",
   "private": true,
   "scripts": {
     "lint": "eslint --ext .js,.ts,.vue ./",

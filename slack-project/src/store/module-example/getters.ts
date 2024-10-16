@@ -3,8 +3,14 @@ import { StateInterface } from '../index';
 import { ExampleStateInterface } from './state';
 
 const getters: GetterTree<ExampleStateInterface, StateInterface> = {
-  someAction (/* context */) {
-    // your code
+  loginError(state) {
+    return state.loginError;
+  },
+  registrationError(state) {
+    return state.registrationError;
+  },
+  isAuthenticated(state) {
+    return !!state.user;
   }
 };
 
