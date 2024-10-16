@@ -69,7 +69,7 @@ export default {
     
     async onSubmit() {
       this.login({ username: this.username, password: this.password }).then(() => {
-        this.$router.push('/');
+        this.$router.push('/main');
       })
       .catch(error => {
         console.error('Login failed:', error);

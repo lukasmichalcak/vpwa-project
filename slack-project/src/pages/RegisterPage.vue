@@ -74,7 +74,7 @@ export default {
     },
     async onSubmit(){
       this.register({ firstName: this.firstName, lastName: this.lastName, username: this.username, email: this.email, password: this.password }).then(() => {
-        this.$router.push('/');
+        this.$router.push('/main');
       })
       .catch(error => {
         console.error('Registration failed:', error);
