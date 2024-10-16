@@ -17,15 +17,12 @@
           </q-avatar>
           SKRUPULUS
         </q-toolbar-title>
-        <UserAvatarComponent/>
       </q-toolbar>
     </q-header>
 
     <q-drawer show-if-above v-model="leftDrawerOpen" side="left" bordered>
       <!-- Left drawer content -->
-
       <ServerListComponent />
-
     </q-drawer>
 
     <q-drawer v-model="rightDrawerOpen" side="right" bordered>
@@ -58,7 +55,6 @@
       <CommandLineComponent
         :rightDrawerOpen="rightDrawerOpen"
         @toggleRightDrawer="toggleRightDrawer"
-
       />
     </q-footer>
   </q-layout>
@@ -66,20 +62,17 @@
 
 <script>
 import { ref } from 'vue'
-import ServerListComponent from 'components/ServerListComponent.vue';
+import ServerListComponent from 'components/ServerListComponent.vue'
 import CommandLineComponent from 'src/components/CommandLineComponent.vue';
-import UserAvatarComponent from 'src/components/UserAvatarComponent.vue';
 
 export default {
   components: {
     ServerListComponent,
-    CommandLineComponent,
-    UserAvatarComponent
+    CommandLineComponent
   },
   setup () {
     const leftDrawerOpen = ref(false)
     const rightDrawerOpen = ref(false)
-    const text = ref('')
 
     const toggleLeftDrawer = () => {
       leftDrawerOpen.value = !leftDrawerOpen.value
@@ -95,7 +88,6 @@ export default {
     return {
       leftDrawerOpen,
       rightDrawerOpen,
-      text,
       toggleLeftDrawer,
       toggleRightDrawer
     }

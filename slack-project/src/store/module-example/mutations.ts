@@ -30,7 +30,7 @@ const mutation: MutationTree<ExampleStateInterface> = {
       state.user.username = username;
     }
     else {
-      state.user = {firstName: "John", lastName: "Doe", username: username, email:"examplemail@gmail.com", password: "1234"} // password will be hashed later
+      state.user = {firstName: 'John', lastName: 'Doe', username: username, email:'examplemail@gmail.com', password: '1234'} // password will be hashed later
       // this is an ugly solution, until we have a database there is nothing to do
     }
   },
