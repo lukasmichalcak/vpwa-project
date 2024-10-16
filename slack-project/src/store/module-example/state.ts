@@ -1,6 +1,6 @@
 export interface ExampleStateInterface {
   prop: boolean;
-  user: null | { username: string };
+  user: null | { firstName: string, lastName: string, username: string, email: string, password: string }; //password will be hashed later
   loginError: string;
   registrationError: string;
 }

@@ -17,6 +17,7 @@
           </q-avatar>
           SKRUPULUS
         </q-toolbar-title>
+        <UserAvatarComponent/>
       </q-toolbar>
     </q-header>
 
@@ -65,13 +66,15 @@
 
 <script>
 import { ref } from 'vue'
-import ServerListComponent from 'components/ServerListComponent.vue'
+import ServerListComponent from 'components/ServerListComponent.vue';
 import CommandLineComponent from 'src/components/CommandLineComponent.vue';
+import UserAvatarComponent from 'src/components/UserAvatarComponent.vue';
 
 export default {
   components: {
     ServerListComponent,
-    CommandLineComponent
+    CommandLineComponent,
+    UserAvatarComponent
   },
   setup () {
     const leftDrawerOpen = ref(false)

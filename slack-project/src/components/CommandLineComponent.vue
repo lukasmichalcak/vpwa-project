@@ -3,7 +3,7 @@
       rounded
       filled
       v-model="text"
-      label="Cmd"
+      label="Type"
       label-color="white"
       input-class="custom-input-text"
       @keyup.enter="handleEnter"
