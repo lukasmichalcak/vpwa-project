@@ -16,7 +16,6 @@ const routes: RouteRecordRaw[] = [
     path: '/main',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/IndexPage.vue') },
       { path: 'server-list', component: () => import('components/ServerListComponent.vue') },
       { path: 'comand-line', component: () => import('components/CommandLineComponent.vue') },
     ],

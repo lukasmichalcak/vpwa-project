@@ -9,7 +9,7 @@ const actions: ActionTree<ExampleStateInterface, StateInterface> = {
         commit('SET_LOGIN_ERROR', 'All fields must be filled');
         reject(new Error('Fields missing'));
       } else {
-        commit('SET_USER', { username });
+        commit('SET_USERNAME', username);
         // will handle password later, probably will commit a hash
         commit('SET_LOGIN_ERROR', '');
         resolve();
@@ -23,13 +23,17 @@ const actions: ActionTree<ExampleStateInterface, StateInterface> = {
         commit('SET_REGISTRATION_ERROR', 'All fields must be filled');
         reject(new Error('Fields missing'));
       } else {
-        commit('SET_USER', { username });
+        const user = {firstName: firstName, lastName: lastName, username: username, email: email, password: password}
+        commit('SET_USER', user);
         // will handle password later, probably will commit a hash
-        // will handle other setters later when relevant
         commit('SET_REGISTRATION_ERROR', '');
         resolve();
       }
     });
+  },
+
+  logout({ commit }) {
+    commit('SET_USER_NULL');
   }
 };
 
