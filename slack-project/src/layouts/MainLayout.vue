@@ -22,7 +22,9 @@
 
     <q-drawer show-if-above v-model="leftDrawerOpen" side="left" bordered>
       <!-- Left drawer content -->
+
       <ServerListComponent />
+
     </q-drawer>
 
     <q-drawer v-model="rightDrawerOpen" side="right" bordered>
@@ -55,6 +57,7 @@
       <CommandLineComponent
         :rightDrawerOpen="rightDrawerOpen"
         @toggleRightDrawer="toggleRightDrawer"
+
       />
     </q-footer>
   </q-layout>
