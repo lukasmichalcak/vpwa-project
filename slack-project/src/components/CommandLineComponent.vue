@@ -1,59 +1,49 @@
 <template>
-    <q-input
-      rounded
-      filled
-      v-model="text"
-      label="Type"
-      label-color="white"
-      input-class="custom-input-text"
-      @keyup.enter="handleEnter"
-    />
-  </template>
-  
-  <script>
-  import { ref } from 'vue';
-  //import { useStore } from 'vuex';
+  <q-input
+    rounded
+    filled
+    v-model="text"
+    label="Type"
+    label-color="white"
+    input-class="custom-input-text"
+    @keyup.enter="handleEnter"
+  />
+</template>
 
+<script lang="ts">
+import { mapActions } from 'vuex';
+import { defineComponent } from 'vue';
 
-  export default {
-    props: {
-      rightDrawerOpen: Boolean
+export default defineComponent({
+  data() {
+    return {
+      text: '',
+    };
+  },
+  props: {
+    rightDrawerOpen: Boolean,
+  },
+  methods: {
+    ...mapActions('module-example', ['join']),
+
+    handleEnter() {
+      if (this.text === '/list') {
+        this.$emit('toggleRightDrawer');
+        this.text = '';
+      }
+      if (this.text.startsWith('/join')) {
+        const parts = this.text.split(' ');
+        const channelName = parts[1];
+        const isPrivate = parts[2] === '[private]';
+        const commandJoin = { channelName, isPrivate };
+        this.join({ command: commandJoin });
+        this.text = '';
+      }
     },
-    setup(props, { emit }) {
-      const text = ref('')
-      //const store = useStore();
-  
-      const handleEnter = () => {
-        if (text.value === '/list'){
-            emit('toggleRightDrawer')
-            text.value = ''
-        }
-        if (text.value.startsWith('/join')){
-          console.log(text.value)
-          const parts = text.value.split(' ')
-          const channelName = parts[1]
-          const isPrivate = parts[2] === '[private]'
-          emit('createNewChannel', { channelName, isPrivate })
-          text.value = ''
-        }
-        //store.dispatch('updateGlobalVariable', text.value);
+  },
+});
+</script>
 
-        
-      }
-  
-      //watch(text, () => {
-      //  if (text.value === '/list') {
-      //    emit('toggleRightDrawer')
-      //  }
-      //})
-  
-      return {
-        text,
-        handleEnter
-      }
-    }
-  }
-  </script>
 <style lang="scss">
 .custom-input-text {
   color: white;

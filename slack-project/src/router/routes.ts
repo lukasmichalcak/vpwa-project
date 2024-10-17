@@ -1,29 +1,34 @@
 import { RouteRecordRaw } from 'vue-router';
 
 const routes: RouteRecordRaw[] = [
-
   {
     path: '/',
-    redirect: '/login'
+    redirect: '/login',
   },
 
   {
     path: '/login',
-    component: () => import('pages/LoginPage.vue') //might include child component
+    component: () => import('pages/LoginPage.vue'), //might include child component
   },
 
   {
     path: '/main',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: 'server-list', component: () => import('components/ServerListComponent.vue') },
-      { path: 'comand-line', component: () => import('components/CommandLineComponent.vue') },
+      {
+        path: 'server-list',
+        component: () => import('components/ServerListComponent.vue'),
+      },
+      {
+        path: 'comand-line',
+        component: () => import('components/CommandLineComponent.vue'),
+      },
     ],
   },
 
   {
     path: '/register',
-    component: () => import('pages/RegisterPage.vue')
+    component: () => import('pages/RegisterPage.vue'),
   },
 
   // Always leave this as last one,
@@ -35,4 +40,3 @@ const routes: RouteRecordRaw[] = [
 ];
 
 export default routes;
-

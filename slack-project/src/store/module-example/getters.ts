@@ -3,35 +3,35 @@ import { StateInterface } from '../index';
 import { ExampleStateInterface } from './state';
 
 const getters: GetterTree<ExampleStateInterface, StateInterface> = {
-  user(state){
+  user(state) {
     return state.user;
   },
 
-  firstName(state){
+  firstName(state) {
     if (state.user) {
       return state.user.firstName;
     }
   },
 
-  lastName(state){
+  lastName(state) {
     if (state.user) {
       return state.user.lastName;
     }
   },
 
-  username(state){
+  username(state) {
     if (state.user) {
       return state.user.username;
     }
   },
 
-  email(state){
+  email(state) {
     if (state.user) {
       return state.user.email;
     }
   },
 
-  password(state){
+  password(state) {
     if (state.user) {
       return state.user.password;
     }
@@ -45,9 +45,17 @@ const getters: GetterTree<ExampleStateInterface, StateInterface> = {
     return state.registrationError;
   },
 
+  commandJoin(state) {
+    return state.commandJoin;
+  },
+
   // isAuthenticated(state) {
   //   return !!state.username;
   // }
+
+  genericUsers(state) {
+    return state.genericUsers;
+  },
 };
 
 export default getters;
