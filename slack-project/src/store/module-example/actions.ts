@@ -5,21 +5,25 @@ import { ExampleStateInterface } from './state';
 const actions: ActionTree<ExampleStateInterface, StateInterface> = {
   login({ commit, getters }, { username, password }) {
     return new Promise<void>((resolve, reject) => {
-      if (!username || !password) {
+      // Trim whitespace and check if fields are empty
+      if (!username.trim() || !password.trim()) {
         commit('SET_LOGIN_ERROR', 'All fields must be filled');
         reject(new Error('Fields missing'));
-      } else if (
-        getters.genericUsers.some(
-          (user: { username: string }) => user.username === username
-        )
-      ) {
-        commit('SET_LOGIN_ERROR', 'Username already taken');
-        reject(new Error('Taken username'));
       } else {
-        commit('SET_USERNAME', username);
-        // will handle password later, probably will commit a hash
-        commit('SET_LOGIN_ERROR', '');
-        resolve();
+        // Unsafe in real practice, this is just for simulating before backend
+        const fetchedUser = getters.genericUsers.find(
+          (user: { username: string; password: string }) =>
+            user.username === username && user.password === password
+        );
+
+        if (!fetchedUser) {
+          commit('SET_LOGIN_ERROR', 'Username or password incorrect');
+          reject(new Error('Invalid login credentials'));
+        } else {
+          commit('SET_USER', fetchedUser);
+          commit('SET_LOGIN_ERROR', '');
+          resolve();
+        }
       }
     });
   },
@@ -29,7 +33,13 @@ const actions: ActionTree<ExampleStateInterface, StateInterface> = {
     { firstName, lastName, username, email, password }
   ) {
     return new Promise<void>((resolve, reject) => {
-      if (!firstName || !lastName || !username || !email || !password) {
+      if (
+        !firstName.trim() ||
+        !lastName.trim() ||
+        !username.trim() ||
+        !email.trim() ||
+        !password.trim()
+      ) {
         commit('SET_REGISTRATION_ERROR', 'All fields must be filled');
         reject(new Error('Fields missing'));
       } else if (
@@ -39,6 +49,13 @@ const actions: ActionTree<ExampleStateInterface, StateInterface> = {
       ) {
         commit('SET_Registration_ERROR', 'Username already taken');
         reject(new Error('Taken username'));
+      } else if (
+        getters.genericUsers.some(
+          (user: { email: string }) => user.email === email
+        )
+      ) {
+        commit('SET_Registration_ERROR', 'email already taken');
+        reject(new Error('Taken email'));
       } else {
         const user = {
           firstName: firstName,
@@ -48,7 +65,7 @@ const actions: ActionTree<ExampleStateInterface, StateInterface> = {
           password: password,
         };
         commit('SET_USER', user);
-        // will handle password later, probably will commit a hash
+        commit('ADD_USER', user);
         commit('SET_REGISTRATION_ERROR', '');
         resolve();
       }

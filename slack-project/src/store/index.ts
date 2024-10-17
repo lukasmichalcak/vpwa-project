@@ -1,12 +1,12 @@
-import { store } from 'quasar/wrappers'
-import { InjectionKey } from 'vue'
-import { Router } from 'vue-router'
+import { store } from 'quasar/wrappers';
+import { InjectionKey } from 'vue';
+import { Router } from 'vue-router';
 import {
   createStore,
   Store as VuexStore,
   useStore as vuexUseStore,
-} from 'vuex'
-import moduleExample from './module-example'
+} from 'vuex';
+import moduleExample from './module-example';
 
 // import example from './module-example'
 // import { ExampleStateInterface } from './module-example/state';
@@ -24,18 +24,19 @@ export interface StateInterface {
   // Define your own store structure, using submodules if needed
   // example: ExampleStateInterface;
   // Declared as unknown to avoid linting issue. Best to strongly type as per the line above.
-  example: unknown
+  example: unknown;
 }
 
 // provide typings for `this.$store`
 declare module 'vue' {
   interface ComponentCustomProperties {
-    $store: VuexStore<StateInterface>
+    $store: VuexStore<StateInterface>;
   }
 }
 
 // provide typings for `useStore` helper
-export const storeKey: InjectionKey<VuexStore<StateInterface>> = Symbol('vuex-key')
+export const storeKey: InjectionKey<VuexStore<StateInterface>> =
+  Symbol('vuex-key');
 
 // Provide typings for `this.$router` inside Vuex stores
 declare module 'vuex' {
@@ -54,12 +55,12 @@ export default store(function (/* { ssrContext } */) {
 
     // enable strict mode (adds overhead!)
     // for dev mode and --debug builds only
-    strict: !!process.env.DEBUGGING
-  })
+    strict: !!process.env.DEBUGGING,
+  });
 
   return Store;
-})
+});
 
 export function useStore() {
-  return vuexUseStore(storeKey)
+  return vuexUseStore(storeKey);
 }
