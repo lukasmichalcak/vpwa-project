@@ -2,13 +2,7 @@
   <q-layout view="hHh lpR lFr">
     <q-header reveal elevated class="bg-primary text-white">
       <q-toolbar>
-        <q-btn
-          dense
-          flat
-          round
-          icon="menu"
-          @click="toggleLeftDrawer"
-        />
+        <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
 
         <q-toolbar-title>
           <q-avatar>
@@ -16,10 +10,17 @@
           </q-avatar>
           SKRUPULUS
         </q-toolbar-title>
+        <UserAvatarComponent />
       </q-toolbar>
     </q-header>
 
-    <q-drawer show-if-above v-model="leftDrawerOpen" side="left" bordered persistent>
+    <q-drawer
+      show-if-above
+      v-model="leftDrawerOpen"
+      side="left"
+      bordered
+      persistent
+    >
       <!-- Left drawer content -->
       <KeepAlive><ServerListComponent /></KeepAlive>
     </q-drawer>
@@ -31,17 +32,13 @@
           <q-item-section avatar>
             <q-icon name="account_circle" />
           </q-item-section>
-          <q-item-section>
-            User1
-          </q-item-section>
+          <q-item-section> User1 </q-item-section>
         </q-item>
         <q-item clickable v-ripple>
           <q-item-section avatar>
             <q-icon name="account_circle" />
           </q-item-section>
-          <q-item-section>
-            User2
-          </q-item-section>
+          <q-item-section> User2 </q-item-section>
         </q-item>
       </q-list>
     </q-drawer>
@@ -61,47 +58,47 @@
 </template>
 
 <script>
-import { ref } from 'vue'
-import ServerListComponent from 'components/ServerListComponent.vue'
+import { ref } from 'vue';
+import ServerListComponent from 'components/ServerListComponent.vue';
 import CommandLineComponent from 'src/components/CommandLineComponent.vue';
+import UserAvatarComponent from 'src/components/UserAvatarComponent.vue';
 
 export default {
   components: {
     ServerListComponent,
-    CommandLineComponent
+    CommandLineComponent,
+    UserAvatarComponent,
   },
   props: {
-    newChannel: Object
+    newChannel: Object,
   },
-  setup () {
-    const leftDrawerOpen = ref(false)
-    const rightDrawerOpen = ref(false)
-    const newChannel = ref(null)
+  setup() {
+    const leftDrawerOpen = ref(false);
+    const rightDrawerOpen = ref(false);
+    const newChannel = ref(null);
 
     const toggleLeftDrawer = () => {
-      leftDrawerOpen.value = !leftDrawerOpen.value
-    }
+      leftDrawerOpen.value = !leftDrawerOpen.value;
+    };
 
     const toggleRightDrawer = () => {
-      rightDrawerOpen.value = !rightDrawerOpen.value
-    }
+      rightDrawerOpen.value = !rightDrawerOpen.value;
+    };
 
     const handleCreateNewChannel = (channelData) => {
-      console.log(channelData)
-      console.log(newChannel.value)
-      newChannel.value = channelData
-      console.log(newChannel.value)
-    }
-
+      console.log(channelData);
+      console.log(newChannel.value);
+      newChannel.value = channelData;
+      console.log(newChannel.value);
+    };
 
     return {
       leftDrawerOpen,
       rightDrawerOpen,
       toggleLeftDrawer,
       toggleRightDrawer,
-      handleCreateNewChannel
-    }
-  }
-}
+      handleCreateNewChannel,
+    };
+  },
+};
 </script>
-

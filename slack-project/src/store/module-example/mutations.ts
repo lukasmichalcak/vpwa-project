@@ -54,8 +54,13 @@ const mutation: MutationTree<ExampleStateInterface> = {
   SET_LOGIN_ERROR(state, error) {
     state.loginError = error;
   },
+
   SET_REGISTRATION_ERROR(state, error) {
     state.registrationError = error;
+  },
+
+  SET_GENERIC_USERS(state, genericUsers){
+    state.genericUsers = genericUsers;
   }
 };
 

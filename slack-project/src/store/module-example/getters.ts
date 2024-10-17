@@ -48,6 +48,10 @@ const getters: GetterTree<ExampleStateInterface, StateInterface> = {
   // isAuthenticated(state) {
   //   return !!state.username;
   // }
+
+  genericUsers(state){
+    return state.genericUsers;
+  }
 };
 
 export default getters;
