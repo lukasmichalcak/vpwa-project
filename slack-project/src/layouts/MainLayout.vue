@@ -7,7 +7,6 @@
           flat
           round
           icon="menu"
-          v-if="$q.screen.lt.md"
           @click="toggleLeftDrawer"
         />
 
@@ -17,15 +16,12 @@
           </q-avatar>
           SKRUPULUS
         </q-toolbar-title>
-        <UserAvatarComponent/>
       </q-toolbar>
     </q-header>
 
-    <q-drawer show-if-above v-model="leftDrawerOpen" side="left" bordered>
+    <q-drawer show-if-above v-model="leftDrawerOpen" side="left" bordered persistent>
       <!-- Left drawer content -->
-
-      <ServerListComponent />
-
+      <KeepAlive><ServerListComponent /></KeepAlive>
     </q-drawer>
 
     <q-drawer v-model="rightDrawerOpen" side="right" bordered>
@@ -58,7 +54,7 @@
       <CommandLineComponent
         :rightDrawerOpen="rightDrawerOpen"
         @toggleRightDrawer="toggleRightDrawer"
-
+        @createNewChannel="handleCreateNewChannel"
       />
     </q-footer>
   </q-layout>
@@ -66,20 +62,21 @@
 
 <script>
 import { ref } from 'vue'
-import ServerListComponent from 'components/ServerListComponent.vue';
+import ServerListComponent from 'components/ServerListComponent.vue'
 import CommandLineComponent from 'src/components/CommandLineComponent.vue';
-import UserAvatarComponent from 'src/components/UserAvatarComponent.vue';
 
 export default {
   components: {
     ServerListComponent,
-    CommandLineComponent,
-    UserAvatarComponent
+    CommandLineComponent
+  },
+  props: {
+    newChannel: Object
   },
   setup () {
     const leftDrawerOpen = ref(false)
     const rightDrawerOpen = ref(false)
-    const text = ref('')
+    const newChannel = ref(null)
 
     const toggleLeftDrawer = () => {
       leftDrawerOpen.value = !leftDrawerOpen.value
@@ -89,15 +86,20 @@ export default {
       rightDrawerOpen.value = !rightDrawerOpen.value
     }
 
-
+    const handleCreateNewChannel = (channelData) => {
+      console.log(channelData)
+      console.log(newChannel.value)
+      newChannel.value = channelData
+      console.log(newChannel.value)
+    }
 
 
     return {
       leftDrawerOpen,
       rightDrawerOpen,
-      text,
       toggleLeftDrawer,
-      toggleRightDrawer
+      toggleRightDrawer,
+      handleCreateNewChannel
     }
   }
 }
