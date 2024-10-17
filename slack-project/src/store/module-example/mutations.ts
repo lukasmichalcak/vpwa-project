@@ -71,6 +71,9 @@ const mutation: MutationTree<ExampleStateInterface> = {
       state.genericUsers.push(user);
     }
   },
+  SET_COMMAND_JOIN(state, commandJoin) {
+    state.commandJoin = commandJoin;
+  },
 };
 
 export default mutation;

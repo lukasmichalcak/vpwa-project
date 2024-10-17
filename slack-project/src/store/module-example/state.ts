@@ -18,6 +18,7 @@ export interface ExampleStateInterface {
       }[];
   loginError: string;
   registrationError: string;
+  commandJoin: null | object;
 }
 
 function state(): ExampleStateInterface {
@@ -27,6 +28,7 @@ function state(): ExampleStateInterface {
     genericUsers: null,
     loginError: '',
     registrationError: '',
+    commandJoin: null,
   };
 }
 

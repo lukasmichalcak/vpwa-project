@@ -64,33 +64,45 @@
 </template>
 
 <script>
-import { ref } from 'vue';
-import { mapState } from 'vuex';
+import { mapGetters } from 'vuex';
 
 export default {
-  props: {
-    newChannel: Object,
+  data() {
+    return {
+      channels: [],
+      selectedChannel: null,
+      showCreateServerDialog: false,
+      newServerName: '',
+      newServerType: 'Public',
+      channelTypes: ['Public', 'Private'],
+      nameError: false,
+      nameErrorMessage: '',
+    };
   },
   computed: {
-    ...mapState({
-      globalCommand: (state) => state.command,
-    }),
+    ...mapGetters('module-example', ['commandJoin']), // Map Vuex getter
   },
-  setup() {
-    const channels = ref([]);
-    const selectedChannel = ref(null);
-    const showCreateServerDialog = ref(false);
-    const newServerName = ref('');
-    const newServerType = ref('Public');
-    const channelTypes = ref(['Public', 'Private']);
-    const nameError = ref(false);
-    const nameErrorMessage = ref('');
-    const numberOfEntries = 10;
+  watch: {
+    commandJoin(newVal) {
+      console.log('Watcher triggered, new commandJoin:', newVal); // Debug line
 
-    console.log('Component created!');
-
-    for (let i = 1; i <= numberOfEntries; i++) {
-      channels.value.push({
+      // Access the nested command object
+      if (newVal && newVal.command && newVal.command.channelName) {
+        this.channels.push({
+          id: this.channels.length + 1,
+          icon: newVal.command.isPrivate ? 'lock' : 'public',
+          label: newVal.command.channelName,
+          caption: newVal.command.isPrivate ? 'Private' : 'Public',
+          buttonLabel: 'Leave Channel',
+        });
+        console.log('Updated channels:', this.channels);
+      }
+    },
+  },
+  created() {
+    // Populate initial channels list
+    for (let i = 1; i <= 100; i++) {
+      this.channels.push({
         id: i,
         icon: 'public',
         label: `Channel${i}`,
@@ -98,72 +110,48 @@ export default {
         buttonLabel: i % 3 === 0 ? 'Zrušiť kanál' : 'Opustiť kanál',
       });
     }
-
-    //watch(
-    //  () => store.state.globalVariable,
-    //  (newVal) => {
-    //    console.log('Global variable updated:', newVal)
-    //
-    //  },
-    //  { immediate: true, deep: true }
-    //)
-
-    const selectChannel = (id) => {
-      selectedChannel.value = id;
-    };
-
-    const removeChannel = (id) => {
-      channels.value = channels.value.filter((channel) => channel.id !== id);
-      if (selectedChannel.value === id) {
-        selectedChannel.value = null;
+  },
+  methods: {
+    selectChannel(id) {
+      this.selectedChannel = id;
+    },
+    removeChannel(id) {
+      this.channels = this.channels.filter((channel) => channel.id !== id);
+      if (this.selectedChannel === id) {
+        this.selectedChannel = null;
       }
-    };
-
-    const createNewServer = () => {
-      if (newServerName.value.trim() === '') {
-        nameError.value = true;
-        nameErrorMessage.value = 'Channel name is required';
+    },
+    createNewServer() {
+      if (this.newServerName.trim() === '') {
+        this.nameError = true;
+        this.nameErrorMessage = 'Channel name is required';
         return;
       }
 
-      const isNameUsed = channels.value.some(
-        (channel) => channel.label === newServerName.value
+      const isNameUsed = this.channels.some(
+        (channel) => channel.label === this.newServerName
       );
       if (isNameUsed) {
-        nameError.value = true;
-        nameErrorMessage.value = 'Channel name is already used';
+        this.nameError = true;
+        this.nameErrorMessage = 'Channel name is already used';
         return;
       }
 
       const newChannel = {
-        id: channels.value.length + 1,
+        id: this.channels.length + 1,
         icon: 'public',
-        label: newServerName.value,
-        caption: newServerType.value,
+        label: this.newServerName,
+        caption: this.newServerType,
         buttonLabel: 'Zrušiť kanál',
       };
 
-      channels.value.unshift(newChannel);
-      newServerName.value = '';
-      newServerType.value = 'Public';
-      nameError.value = false;
-      nameErrorMessage.value = '';
-      showCreateServerDialog.value = false;
-    };
-
-    return {
-      channels,
-      selectedChannel,
-      showCreateServerDialog,
-      newServerName,
-      newServerType,
-      channelTypes,
-      nameError,
-      nameErrorMessage,
-      selectChannel,
-      removeChannel,
-      createNewServer,
-    };
+      this.channels.unshift(newChannel);
+      this.newServerName = '';
+      this.newServerType = 'Public';
+      this.nameError = false;
+      this.nameErrorMessage = '';
+      this.showCreateServerDialog = false;
+    },
   },
 };
 </script>

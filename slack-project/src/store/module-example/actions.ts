@@ -125,6 +125,10 @@ const actions: ActionTree<ExampleStateInterface, StateInterface> = {
 
     commit('SET_GENERIC_USERS', users);
   },
+
+  join({ commit }, command) {
+    commit('SET_COMMAND_JOIN', command);
+  },
 };
 
 export default actions;
