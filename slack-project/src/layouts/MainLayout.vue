@@ -20,12 +20,18 @@
       side="left"
       bordered
       persistent
+      class="left-drawer"
     >
       <!-- Left drawer content -->
       <KeepAlive><ServerListComponent /></KeepAlive>
     </q-drawer>
 
-    <q-drawer v-model="rightDrawerOpen" side="right" bordered>
+    <q-drawer
+      v-model="rightDrawerOpen"
+      side="right"
+      bordered
+      class="right-drawer"
+    >
       <!-- Right drawer content -->
       <q-list>
         <q-item clickable v-ripple>
@@ -43,8 +49,9 @@
       </q-list>
     </q-drawer>
 
-    <q-page-container>
+    <q-page-container class="center-content">
       <router-view />
+      <InfiniteScrollComponent />
     </q-page-container>
 
     <q-footer elevated>
@@ -62,12 +69,14 @@ import { ref } from 'vue';
 import ServerListComponent from 'components/ServerListComponent.vue';
 import CommandLineComponent from 'src/components/CommandLineComponent.vue';
 import UserAvatarComponent from 'src/components/UserAvatarComponent.vue';
+import InfiniteScrollComponent from 'src/components/InfiniteScrollComponent.vue';
 
 export default {
   components: {
     ServerListComponent,
     CommandLineComponent,
     UserAvatarComponent,
+    InfiniteScrollComponent,
   },
   props: {
     newChannel: Object,
@@ -102,3 +111,17 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+html,
+body {
+  overflow: hidden; /* Disable the browser scroll */
+}
+
+.left-drawer,
+.right-drawer,
+.center-content {
+  overflow-y: auto; /* Make each section scroll independently */
+  height: 100vh; /* Ensure the sections take up full height */
+}
+</style>
