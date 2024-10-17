@@ -11,20 +11,33 @@
   </template>
   
   <script>
-  import { ref } from 'vue'
-  
+  import { ref } from 'vue';
+  //import { useStore } from 'vuex';
+
+
   export default {
     props: {
       rightDrawerOpen: Boolean
     },
     setup(props, { emit }) {
       const text = ref('')
+      //const store = useStore();
   
       const handleEnter = () => {
         if (text.value === '/list'){
             emit('toggleRightDrawer')
             text.value = ''
         }
+        if (text.value.startsWith('/join')){
+          console.log(text.value)
+          const parts = text.value.split(' ')
+          const channelName = parts[1]
+          const isPrivate = parts[2] === '[private]'
+          emit('createNewChannel', { channelName, isPrivate })
+          text.value = ''
+        }
+        //store.dispatch('updateGlobalVariable', text.value);
+
         
       }
   

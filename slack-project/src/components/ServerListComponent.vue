@@ -1,5 +1,4 @@
 <template>
-  <div class="server-list-container">
     <q-list bordered class="rounded-borders">
       <q-item
         v-for="channel in channels"
@@ -28,12 +27,14 @@
         </q-item-section>
       </q-item>
     </q-list>
+
     <q-btn
       class="create-server-btn"
       color="primary"
       label="Create New Server"
       @click="showCreateServerDialog = true"
     />
+
     <q-dialog v-model="showCreateServerDialog">
       <q-card>
         <q-card-section>
@@ -68,13 +69,22 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
-  </div>
+  
 </template>
 
 <script>
 import { ref } from 'vue'
+import { mapState } from 'vuex';
 
 export default {
+  props: {
+    newChannel: Object,
+  },
+  computed: {
+    ...mapState({
+      globalCommand: (state) => state.command
+    })
+  },
   setup() {
     const channels = ref([])
     const selectedChannel = ref(null)
@@ -90,7 +100,6 @@ export default {
     console.log('Component created!')
 
 
-
     for (let i = 1; i <= numberOfEntries; i++) {
       channels.value.push({
         id: i,
@@ -100,6 +109,16 @@ export default {
         buttonLabel: i % 3 === 0 ? 'Zrušiť kanál' : 'Opustiť kanál'
       })
     }
+
+
+    //watch(
+    //  () => store.state.globalVariable,
+    //  (newVal) => {
+    //    console.log('Global variable updated:', newVal)
+    //   
+    //  },
+    //  { immediate: true, deep: true }
+    //)
 
     const selectChannel = (id) => {
       selectedChannel.value = id
@@ -161,12 +180,7 @@ export default {
 </script>
 
 <style scoped>
-.server-list-container {
-  position: relative;
-  height: 100vh;
-  overflow-y: auto;
-  padding-bottom: 60px;
-}
+
 
 .create-server-btn {
   position: fixed;

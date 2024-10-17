@@ -7,7 +7,6 @@
           flat
           round
           icon="menu"
-          v-if="$q.screen.lt.md"
           @click="toggleLeftDrawer"
         />
 
@@ -20,9 +19,9 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer show-if-above v-model="leftDrawerOpen" side="left" bordered>
+    <q-drawer show-if-above v-model="leftDrawerOpen" side="left" bordered persistent>
       <!-- Left drawer content -->
-      <ServerListComponent />
+      <KeepAlive><ServerListComponent /></KeepAlive>
     </q-drawer>
 
     <q-drawer v-model="rightDrawerOpen" side="right" bordered>
@@ -55,6 +54,7 @@
       <CommandLineComponent
         :rightDrawerOpen="rightDrawerOpen"
         @toggleRightDrawer="toggleRightDrawer"
+        @createNewChannel="handleCreateNewChannel"
       />
     </q-footer>
   </q-layout>
@@ -70,9 +70,13 @@ export default {
     ServerListComponent,
     CommandLineComponent
   },
+  props: {
+    newChannel: Object
+  },
   setup () {
     const leftDrawerOpen = ref(false)
     const rightDrawerOpen = ref(false)
+    const newChannel = ref(null)
 
     const toggleLeftDrawer = () => {
       leftDrawerOpen.value = !leftDrawerOpen.value
@@ -82,14 +86,20 @@ export default {
       rightDrawerOpen.value = !rightDrawerOpen.value
     }
 
-
+    const handleCreateNewChannel = (channelData) => {
+      console.log(channelData)
+      console.log(newChannel.value)
+      newChannel.value = channelData
+      console.log(newChannel.value)
+    }
 
 
     return {
       leftDrawerOpen,
       rightDrawerOpen,
       toggleLeftDrawer,
-      toggleRightDrawer
+      toggleRightDrawer,
+      handleCreateNewChannel
     }
   }
 }
