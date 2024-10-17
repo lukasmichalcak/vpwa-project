@@ -45,6 +45,10 @@ const getters: GetterTree<ExampleStateInterface, StateInterface> = {
     return state.registrationError;
   },
 
+  commandJoin(state) {
+    return state.commandJoin;
+  },
+
   // isAuthenticated(state) {
   //   return !!state.username;
   // }

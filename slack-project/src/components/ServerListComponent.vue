@@ -74,17 +74,17 @@
 
 <script>
 import { ref } from 'vue'
-import { mapState } from 'vuex';
+// import { useStore } from 'vuex';
 
 export default {
-  props: {
-    newChannel: Object,
-  },
-  computed: {
-    ...mapState({
-      globalCommand: (state) => state.command
-    })
-  },
+  // props: {
+  //   newChannel: Object,
+  // },
+  // computed: {
+  //   ...mapState({
+  //     globalCommand: (state) => state.command
+  //   })
+  // },
   setup() {
     const channels = ref([])
     const selectedChannel = ref(null)
@@ -94,8 +94,10 @@ export default {
     const channelTypes = ref(['Public', 'Private'])
     const nameError = ref(false)
     const nameErrorMessage = ref('')
-    const numberOfEntries = 10
+    const numberOfEntries = 100
+    // const store = useStore();
 
+    // const commandJoin = computed(() => store.state.command.join)
 
     console.log('Component created!')
 
@@ -111,14 +113,14 @@ export default {
     }
 
 
-    //watch(
-    //  () => store.state.globalVariable,
+    // watch(
+    //  commandJoin,
     //  (newVal) => {
     //    console.log('Global variable updated:', newVal)
-    //   
+      
     //  },
     //  { immediate: true, deep: true }
-    //)
+    // )
 
     const selectChannel = (id) => {
       selectedChannel.value = id
@@ -173,7 +175,8 @@ export default {
       nameErrorMessage,
       selectChannel,
       removeChannel,
-      createNewServer
+      createNewServer,
+      // commandJoin
     }
   }
 }

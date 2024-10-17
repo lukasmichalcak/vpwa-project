@@ -56,6 +56,10 @@ const mutation: MutationTree<ExampleStateInterface> = {
   },
   SET_REGISTRATION_ERROR(state, error) {
     state.registrationError = error;
+  },
+
+  SET_COMMAND_JOIN(state, commandJoin){
+    state.commandJoin = commandJoin;
   }
 };
 

@@ -34,7 +34,11 @@ const actions: ActionTree<ExampleStateInterface, StateInterface> = {
 
   logout({ commit }) {
     commit('SET_USER_NULL');
-  }
+  },
+
+  join({ commit }, command) {
+    commit('SET_COMMAND_JOIN', command);
+  },
 };
 
 export default actions;
