@@ -48,6 +48,12 @@ const getters: GetterTree<ExampleStateInterface, StateInterface> = {
   commandJoin(state) {
     return state.commandJoin;
   },
+  commandQuit(state) {
+    return state.commandQuit;
+  },
+  commandCancel(state) {
+    return state.commandCancel;
+  },
 
   // isAuthenticated(state) {
   //   return !!state.username;

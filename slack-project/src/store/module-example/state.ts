@@ -19,6 +19,8 @@ export interface ExampleStateInterface {
   loginError: string;
   registrationError: string;
   commandJoin: null | object;
+  commandQuit: null | string;
+  commandCancel: null | string;
 }
 
 function state(): ExampleStateInterface {
@@ -29,6 +31,8 @@ function state(): ExampleStateInterface {
     loginError: '',
     registrationError: '',
     commandJoin: null,
+    commandQuit: null,
+    commandCancel: null,
   };
 }
 

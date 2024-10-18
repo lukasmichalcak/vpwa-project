@@ -5,11 +5,9 @@
         <q-icon name="account_circle" />
       </q-item-section>
       <q-item-section>
-        <div>{{ user.name }} {{ user.lastName }}</div>
-        <div class="text-subtitle2">{{ user.nickname }}</div>
-        <div class="text-caption">{{ user.email }}</div>
+        <div>{{ user.nickname }}</div>
         <div class="text-caption">Role: {{ user.role }}</div>
-        <div class="text-caption">Votes: {{ user.votes }}</div>
+
       </q-item-section>
     </q-item>
   </q-list>
@@ -33,7 +31,6 @@ export default defineComponent({
     const users = ref<User[]>([]);
     const numberOfUsers = 10;
 
-    // Populate the users list dynamically using a loop
     for (let i = 1; i <= numberOfUsers; i++) {
       users.value.push({
         name: `Name${i}`,
