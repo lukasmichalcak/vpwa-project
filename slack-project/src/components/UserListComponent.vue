@@ -31,7 +31,6 @@ export default defineComponent({
     const users = ref<User[]>([]);
     const numberOfUsers = 10;
 
-    // Populate the users list dynamically using a loop
     for (let i = 1; i <= numberOfUsers; i++) {
       users.value.push({
         name: `Name${i}`,

@@ -29,7 +29,7 @@ export default defineComponent({
     ...mapActions('module-example', ['cancel']),
 
     handleEnter() {
-      if (this.text === '/list') {
+      if (this.text.trim() === '/list') {
         this.$emit('toggleRightDrawer');
       }
       if (this.text.startsWith('/join')) {
