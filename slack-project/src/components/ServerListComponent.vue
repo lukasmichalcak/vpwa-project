@@ -70,6 +70,7 @@ export default {
   data() {
     return {
       channels: [],
+      hiddenChannels: [],
       selectedChannel: null,
       showCreateServerDialog: false,
       newServerName: '',
@@ -84,16 +85,41 @@ export default {
   },
   watch: {
     commandJoin(newVal) {
-      console.log('Watcher triggered, new commandJoin:', newVal); // Debug line
-
       // Access the nested command object
       if (newVal && newVal.command && newVal.command.channelName) {
-        this.channels.push({
+
+        const channelName = newVal.command.channelName;
+
+
+        const hiddenChannelIndex = this.hiddenChannels.findIndex(
+          (channel) => channel.label === channelName && channel.caption === 'Public'
+        );
+        console.log('Hidden channel index:', hiddenChannelIndex);
+        if (hiddenChannelIndex !== -1) {
+          console.log('Hidden channel found:', this.hiddenChannels[hiddenChannelIndex]);
+          const hiddenChannel = this.hiddenChannels.splice(hiddenChannelIndex, 1)[0];
+          this.channels.unshift(hiddenChannel);
+          return;
+        }
+
+        const isNameUsed = this.channels.some(
+          (channel) => channel.label === channelName
+        ) || this.hiddenChannels.some(
+          (channel) => channel.label === channelName
+        );
+
+        if (isNameUsed) {
+          this.nameError = true;
+          this.nameErrorMessage = 'Channel name is already used';
+          return;
+        }
+
+        this.channels.unshift({
           id: this.channels.length + 1,
           icon: newVal.command.isPrivate ? 'lock' : 'public',
           label: newVal.command.channelName,
           caption: newVal.command.isPrivate ? 'Private' : 'Public',
-          buttonLabel: 'Leave Channel',
+          buttonLabel: 'Zrušiť kanál',
         });
         console.log('Updated channels:', this.channels);
       }
@@ -101,13 +127,22 @@ export default {
   },
   created() {
     // Populate initial channels list
-    for (let i = 1; i <= 100; i++) {
+    for (let i = 1; i <= 10; i++) {
       this.channels.push({
         id: i,
-        icon: 'public',
+        icon: i % 2 === 0 ? 'lock' : 'public',
         label: `Channel${i}`,
         caption: i % 2 === 0 ? 'Private' : 'Public',
         buttonLabel: i % 3 === 0 ? 'Zrušiť kanál' : 'Opustiť kanál',
+      });
+    }
+    for (let k = 1; k <= 10; k++) {
+      this.hiddenChannels.push({
+        id: k+1000,
+        icon: k % 2 === 0 ? 'lock' : 'public',
+        label: `Hidden Channel${k}`,
+        caption: k % 2 === 0 ? 'Private' : 'Public',
+        buttonLabel: 'Opustiť kanál',
       });
     }
   },
