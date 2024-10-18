@@ -94,7 +94,6 @@ export default {
         const hiddenChannelIndex = this.hiddenChannels.findIndex(
           (channel) => channel.label === channelName && channel.caption === 'Public'
         );
-        console.log('Hidden channel index:', hiddenChannelIndex);
         if (hiddenChannelIndex !== -1) {
           console.log('Hidden channel found:', this.hiddenChannels[hiddenChannelIndex]);
           const hiddenChannel = this.hiddenChannels.splice(hiddenChannelIndex, 1)[0];
