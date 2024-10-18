@@ -20,6 +20,7 @@ export interface ExampleStateInterface {
   registrationError: string;
   commandJoin: null | object;
   commandQuit: null | string;
+  commandCancel: null | string;
 }
 
 function state(): ExampleStateInterface {
@@ -31,6 +32,7 @@ function state(): ExampleStateInterface {
     registrationError: '',
     commandJoin: null,
     commandQuit: null,
+    commandCancel: null,
   };
 }
 

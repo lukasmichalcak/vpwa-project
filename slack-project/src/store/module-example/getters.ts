@@ -51,6 +51,9 @@ const getters: GetterTree<ExampleStateInterface, StateInterface> = {
   commandQuit(state) {
     return state.commandQuit;
   },
+  commandCancel(state) {
+    return state.commandCancel;
+  },
 
   // isAuthenticated(state) {
   //   return !!state.username;

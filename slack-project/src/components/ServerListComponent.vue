@@ -83,6 +83,7 @@ export default {
   computed: {
     ...mapGetters('module-example', ['commandJoin']), // Map Vuex getter
     ...mapGetters('module-example', ['commandQuit']), // Map Vuex getter
+    ...mapGetters('module-example', ['commandCancel']), // Map Vuex getter
   },
   watch: {
     commandJoin(newVal) {
@@ -125,6 +126,20 @@ export default {
       }
     },
     commandQuit(newVal) {
+      if (newVal) {
+        const channelName = newVal.command;
+        const channelIndex = this.channels.findIndex(
+          (channel) => channel.label === channelName
+        );
+        if (channelIndex !== -1) {
+          console.log('Channel found:', this.channels[channelIndex]);
+          const channel = this.channels.splice(channelIndex, 1)[0];
+          this.hiddenChannels.unshift(channel);
+          return;
+        }
+      }
+    },
+    commandCancel(newVal) {
       if (newVal) {
         const channelName = newVal.command;
         const channelIndex = this.channels.findIndex(

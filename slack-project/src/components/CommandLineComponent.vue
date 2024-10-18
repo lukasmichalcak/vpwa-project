@@ -26,6 +26,7 @@ export default defineComponent({
   methods: {
     ...mapActions('module-example', ['join']),
     ...mapActions('module-example', ['quit']),
+    ...mapActions('module-example', ['cancel']),
 
     handleEnter() {
       if (this.text === '/list') {
@@ -46,6 +47,11 @@ export default defineComponent({
         const parts = this.text.split(' ');
         const channelName = parts[1];;
         this.quit({ command: channelName });
+      }
+      if (this.text.startsWith('/cancel')){
+        const parts = this.text.split(' ');
+        const channelName = parts[1];;
+        this.cancel({ command: channelName });
       }
       this.text = '';
     },
