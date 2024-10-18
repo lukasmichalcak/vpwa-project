@@ -29,16 +29,19 @@ export default defineComponent({
     handleEnter() {
       if (this.text === '/list') {
         this.$emit('toggleRightDrawer');
-        this.text = '';
       }
       if (this.text.startsWith('/join')) {
         const parts = this.text.split(' ');
-        const channelName = parts[1];
-        const isPrivate = parts[2] === '[private]';
+        let isPrivate = false;
+        if (parts[parts.length - 1] === '[private]') {
+          isPrivate = true;
+          parts.pop();
+        }
+        const channelName = parts.slice(1).join(' ');
         const commandJoin = { channelName, isPrivate };
         this.join({ command: commandJoin });
-        this.text = '';
       }
+      this.text = '';
     },
   },
 });

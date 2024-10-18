@@ -33,20 +33,7 @@
       class="right-drawer"
     >
       <!-- Right drawer content -->
-      <q-list>
-        <q-item clickable v-ripple>
-          <q-item-section avatar>
-            <q-icon name="account_circle" />
-          </q-item-section>
-          <q-item-section> User1 </q-item-section>
-        </q-item>
-        <q-item clickable v-ripple>
-          <q-item-section avatar>
-            <q-icon name="account_circle" />
-          </q-item-section>
-          <q-item-section> User2 </q-item-section>
-        </q-item>
-      </q-list>
+      <UserListComponent />
     </q-drawer>
 
     <q-page-container class="center-content">
@@ -70,6 +57,7 @@ import ServerListComponent from 'components/ServerListComponent.vue';
 import CommandLineComponent from 'src/components/CommandLineComponent.vue';
 import UserAvatarComponent from 'src/components/UserAvatarComponent.vue';
 import InfiniteScrollComponent from 'src/components/InfiniteScrollComponent.vue';
+import UserListComponent from 'src/components/UserListComponent.vue';
 
 export default {
   components: {
@@ -77,6 +65,7 @@ export default {
     CommandLineComponent,
     UserAvatarComponent,
     InfiniteScrollComponent,
+    UserListComponent,
   },
   props: {
     newChannel: Object,
