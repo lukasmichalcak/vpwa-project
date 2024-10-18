@@ -25,6 +25,7 @@ export default defineComponent({
   },
   methods: {
     ...mapActions('module-example', ['join']),
+    ...mapActions('module-example', ['quit']),
 
     handleEnter() {
       if (this.text === '/list') {
@@ -40,6 +41,11 @@ export default defineComponent({
         const channelName = parts.slice(1).join(' ');
         const commandJoin = { channelName, isPrivate };
         this.join({ command: commandJoin });
+      }
+      if (this.text.startsWith('/quit')){
+        const parts = this.text.split(' ');
+        const channelName = parts[1];;
+        this.quit({ command: channelName });
       }
       this.text = '';
     },

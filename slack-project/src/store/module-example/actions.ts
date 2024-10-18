@@ -129,6 +129,9 @@ const actions: ActionTree<ExampleStateInterface, StateInterface> = {
   join({ commit }, command) {
     commit('SET_COMMAND_JOIN', command);
   },
+  quit({ commit }, command) {
+    commit('SET_COMMAND_QUIT', command);
+  },
 };
 
 export default actions;

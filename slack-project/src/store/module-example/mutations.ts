@@ -74,6 +74,9 @@ const mutation: MutationTree<ExampleStateInterface> = {
   SET_COMMAND_JOIN(state, commandJoin) {
     state.commandJoin = commandJoin;
   },
+  SET_COMMAND_QUIT(state, commandQuit) {
+    state.commandQuit = commandQuit;
+  },
 };
 
 export default mutation;
