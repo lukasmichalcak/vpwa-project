@@ -12,11 +12,25 @@
     <q-menu>
       <div class="row no-wrap q-pa-md">
         <q-list>
+          <q-radio
+            v-model="notificationReceptionStatus"
+            val="all"
+            label="All"
+          />
+          <q-radio
+            v-model="notificationReceptionStatus"
+            val="tag-only"
+            label="Tag-only"
+          />
           <q-item
             v-for="notification in notifications"
             :key="notification.id"
             clickable
             v-ripple
+            :class="{
+              'bg-warning': notification.id % 3 == 0,
+              'bg-white': notification.id % 3 !== 0,
+            }"
           >
             <q-item-section avatar>
               <q-icon name="notifications" />
@@ -29,7 +43,7 @@
             <q-item-section side>
               <q-btn
                 color="negative"
-                icon="close"
+                icon="delete"
                 flat
                 round
                 dense
@@ -57,6 +71,7 @@ export default defineComponent({
   data() {
     return {
       notifications: <Notification[]>[],
+      notificationReceptionStatus: 'all',
     };
   },
 

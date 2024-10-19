@@ -7,7 +7,6 @@
       <q-item-section>
         <div>{{ user.nickname }}</div>
         <div class="text-caption">Role: {{ user.role }}</div>
-
       </q-item-section>
     </q-item>
   </q-list>
