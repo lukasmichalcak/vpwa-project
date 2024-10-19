@@ -13,6 +13,8 @@
       <q-item-section>
         <q-item-label>{{ channel.label }}</q-item-label>
         <q-item-label caption>{{ channel.caption }}</q-item-label>
+        <q-badge v-if="channel.isnew" color="green" class="q-ml-sm" label="New Channel"/>
+        <q-badge v-if="channel.newMessage" color="primary" class="q-ml-sm" label="New Message"/>
       </q-item-section>
       <q-item-section side>
         <q-btn icon="more_vert" flat round dense>
@@ -82,6 +84,8 @@ export default {
   },
   computed: {
     ...mapGetters('module-example', ['commandJoin']), // Map Vuex getter
+    ...mapGetters('module-example', ['commandQuit']), // Map Vuex getter
+    ...mapGetters('module-example', ['commandCancel']), // Map Vuex getter
   },
   watch: {
     commandJoin(newVal) {
@@ -123,16 +127,46 @@ export default {
         console.log('Updated channels:', this.channels);
       }
     },
+    commandQuit(newVal) {
+      if (newVal) {
+        const channelName = newVal.command;
+        const channelIndex = this.channels.findIndex(
+          (channel) => channel.label === channelName
+        );
+        if (channelIndex !== -1) {
+          console.log('Channel found:', this.channels[channelIndex]);
+          const channel = this.channels.splice(channelIndex, 1)[0];
+          this.hiddenChannels.unshift(channel);
+          return;
+        }
+      }
+    },
+    commandCancel(newVal) {
+      if (newVal) {
+        const channelName = newVal.command;
+        const channelIndex = this.channels.findIndex(
+          (channel) => channel.label === channelName
+        );
+        if (channelIndex !== -1) {
+          console.log('Channel found:', this.channels[channelIndex]);
+          const channel = this.channels.splice(channelIndex, 1)[0];
+          this.hiddenChannels.unshift(channel);
+          return;
+        }
+      }
+    },
   },
   created() {
     // Populate initial channels list
-    for (let i = 1; i <= 10; i++) {
+    for (let i = 1; i <= 100; i++) {
       this.channels.push({
         id: i,
         icon: i % 2 === 0 ? 'lock' : 'public',
         label: `Channel${i}`,
         caption: i % 2 === 0 ? 'Private' : 'Public',
         buttonLabel: i % 3 === 0 ? 'Zrušiť kanál' : 'Opustiť kanál',
+        isnew: false,
+        newMessage: i % 5 === 0 ? true : false, 
       });
     }
     for (let k = 1; k <= 10; k++) {
@@ -142,6 +176,8 @@ export default {
         label: `Hidden Channel${k}`,
         caption: k % 2 === 0 ? 'Private' : 'Public',
         buttonLabel: 'Opustiť kanál',
+        isnew: true,
+        newMessage: k % 3 === 0 ? true : false,
       });
     }
   },
@@ -177,6 +213,7 @@ export default {
         label: this.newServerName,
         caption: this.newServerType,
         buttonLabel: 'Zrušiť kanál',
+        isnew: true,
       };
 
       this.channels.unshift(newChannel);
@@ -191,17 +228,33 @@ export default {
 </script>
 
 <style scoped>
-.create-server-btn {
+/* .create-server-btn {
   position: fixed;
   bottom: 20px;
   right: 20px;
   z-index: 1000;
-}
+} */
 .rounded-borders {
   border-radius: 8px;
 }
 
 .selected-channel {
   background-color: #e0f7fa;
+}
+.server-container {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.q-list {
+  overflow-y: auto;
+  padding-bottom: 60px;
+}
+
+.create-server-btn {
+  position:fixed;
+  bottom: 0px;
+  width: 100%;
 }
 </style>

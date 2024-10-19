@@ -25,9 +25,11 @@ export default defineComponent({
   },
   methods: {
     ...mapActions('module-example', ['join']),
+    ...mapActions('module-example', ['quit']),
+    ...mapActions('module-example', ['cancel']),
 
     handleEnter() {
-      if (this.text === '/list') {
+      if (this.text.trim() === '/list') {
         this.$emit('toggleRightDrawer');
       }
       if (this.text.startsWith('/join')) {
@@ -40,6 +42,16 @@ export default defineComponent({
         const channelName = parts.slice(1).join(' ');
         const commandJoin = { channelName, isPrivate };
         this.join({ command: commandJoin });
+      }
+      if (this.text.startsWith('/quit')){
+        const parts = this.text.split(' ');
+        const channelName = parts[1];;
+        this.quit({ command: channelName });
+      }
+      if (this.text.startsWith('/cancel')){
+        const parts = this.text.split(' ');
+        const channelName = parts[1];;
+        this.cancel({ command: channelName });
       }
       this.text = '';
     },
