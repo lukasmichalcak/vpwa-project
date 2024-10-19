@@ -10,6 +10,7 @@
           </q-avatar>
           SKRUPULUS
         </q-toolbar-title>
+        <NotificationsIconComponent />
         <UserAvatarComponent />
       </q-toolbar>
     </q-header>
@@ -33,6 +34,14 @@
       class="right-drawer"
     >
       <!-- Right drawer content -->
+      <q-btn
+        color="negative"
+        icon="close"
+        flat
+        round
+        dense
+        @click="toggleRightDrawer"
+      />
       <UserListComponent />
     </q-drawer>
 
@@ -58,6 +67,7 @@ import CommandLineComponent from 'src/components/CommandLineComponent.vue';
 import UserAvatarComponent from 'src/components/UserAvatarComponent.vue';
 import InfiniteScrollComponent from 'src/components/InfiniteScrollComponent.vue';
 import UserListComponent from 'src/components/UserListComponent.vue';
+import NotificationsIconComponent from 'src/components/NotificationsIconComponent.vue';
 
 export default {
   components: {
@@ -66,6 +76,7 @@ export default {
     UserAvatarComponent,
     InfiniteScrollComponent,
     UserListComponent,
+    NotificationsIconComponent,
   },
   props: {
     newChannel: Object,
@@ -110,7 +121,7 @@ body {
 .left-drawer,
 .right-drawer,
 .center-content {
-  overflow-y: auto; /* Make each section scroll independently */
+  overflow-y: scroll; /* Make each section scroll independently */
   height: 100vh; /* Ensure the sections take up full height */
 }
 </style>
