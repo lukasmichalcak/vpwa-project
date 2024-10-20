@@ -23,7 +23,6 @@
       persistent
       class="left-drawer"
     >
-      <!-- Left drawer content -->
       <KeepAlive><ChannelListComponent /></KeepAlive>
     </q-drawer>
 
@@ -33,7 +32,6 @@
       bordered
       class="right-drawer"
     >
-      <!-- Right drawer content -->
       <q-btn
         color="negative"
         icon="close"
@@ -80,9 +78,6 @@ export default {
     UserListComponent,
     NotificationsComponent,
   },
-  // props: {
-  //   newChannel: Object,
-  // },
   data() {
     return {
       leftDrawerOpen: false,
@@ -99,11 +94,9 @@ export default {
     },
     scrollToBottom() {
       this.$nextTick(() => {
-        //const scrollContainer = this.$refs.containerForInfiniteScroll;
         const scrollContainer = document.querySelector('.center-content');
 
         if (scrollContainer) {
-          // Scroll to the bottom
           scrollContainer.scrollTop = scrollContainer.scrollHeight;
         }
       });

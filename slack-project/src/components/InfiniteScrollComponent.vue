@@ -44,7 +44,6 @@
               </q-popup-proxy>
             </div>
 
-            <!-- Normal message -->
             <q-chat-message
               v-else
               :name="message.name"
@@ -85,7 +84,7 @@ export default {
 
     getMessageBgColor(message) {
       if (message.text && message.text.some((t) => t.includes('@Kevin '))) {
-        return 'warning'; // Highlight with 'warning' color if '@Michael' is mentioned
+        return 'warning';
       }
       if (message.sent) {
         return 'info';
