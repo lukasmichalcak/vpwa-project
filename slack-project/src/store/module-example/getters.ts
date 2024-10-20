@@ -37,6 +37,10 @@ const getters: GetterTree<ExampleStateInterface, StateInterface> = {
     }
   },
 
+  messages(state) {
+    return state.messages;
+  },
+
   loginError(state) {
     return state.loginError;
   },

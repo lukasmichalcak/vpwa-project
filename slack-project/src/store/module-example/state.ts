@@ -16,6 +16,7 @@ export interface ExampleStateInterface {
         email: string;
         password: string;
       }[];
+  messages: object[];
   loginError: string;
   registrationError: string;
   commandJoin: null | object;
@@ -28,6 +29,7 @@ function state(): ExampleStateInterface {
     prop: false,
     user: null,
     genericUsers: null,
+    messages: [],
     loginError: '',
     registrationError: '',
     commandJoin: null,

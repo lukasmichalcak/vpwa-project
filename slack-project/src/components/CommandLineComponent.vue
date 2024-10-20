@@ -24,6 +24,7 @@ export default defineComponent({
     rightDrawerOpen: Boolean,
   },
   methods: {
+    ...mapActions('module-example', ['addMessage']),
     ...mapActions('module-example', ['join']),
     ...mapActions('module-example', ['quit']),
     ...mapActions('module-example', ['cancel']),
@@ -43,16 +44,28 @@ export default defineComponent({
         const commandJoin = { channelName, isPrivate };
         this.join({ command: commandJoin });
       }
-      if (this.text.startsWith('/quit')){
+      if (this.text.startsWith('/quit')) {
         const parts = this.text.split(' ');
-        const channelName = parts[1];;
+        const channelName = parts[1];
         this.quit({ command: channelName });
       }
-      if (this.text.startsWith('/cancel')){
+      if (this.text.startsWith('/cancel')) {
         const parts = this.text.split(' ');
-        const channelName = parts[1];;
+        const channelName = parts[1];
         this.cancel({ command: channelName });
       }
+      if (this.text.trim() !== '') {
+        const newMessage = {
+          name: 'me',
+          avatar: require('@/assets/images/verifier_logo.png'),
+          text: [this.text],
+          sent: true,
+        };
+        this.addMessage(newMessage);
+
+        this.$emit('message-sent');
+      }
+
       this.text = '';
     },
   },
