@@ -13,17 +13,39 @@
       <q-item-section>
         <q-item-label>{{ channel.label }}</q-item-label>
         <q-item-label caption>{{ channel.caption }}</q-item-label>
-        <q-badge v-if="channel.isnew" color="green" class="q-ml-sm badge-width" label="New Channel"/>
-        <q-badge v-if="channel.newMessage" color="primary" class="q-ml-sm badge-width" label="New Message"/>
+        <q-badge
+          v-if="channel.isnew"
+          color="green"
+          class="q-ml-sm badge-width"
+          label="New Channel"
+        />
+        <q-badge
+          v-if="channel.newMessage"
+          color="primary"
+          class="q-ml-sm badge-width"
+          label="New Message"
+        />
       </q-item-section>
       <q-item-section side>
         <q-btn icon="more_vert" flat round dense>
           <q-popup-proxy anchor="top right" self="top left">
             <q-card>
               <q-card-section>
-                <q-btn color="positive" label="Invite" @click="showInvitePopup = true" />
-                <q-btn color="negative" label="Kick" @click="showKickPopup = true" />
-                <q-btn color="negative" :label="channel.buttonLabel" @click="removeChannel(channel.id)" />
+                <q-btn
+                  color="positive"
+                  label="Invite"
+                  @click="showInvitePopup = true"
+                />
+                <q-btn
+                  color="negative"
+                  label="Kick"
+                  @click="showKickPopup = true"
+                />
+                <q-btn
+                  color="negative"
+                  :label="channel.buttonLabel"
+                  @click="removeChannel(channel.id)"
+                />
               </q-card-section>
             </q-card>
           </q-popup-proxy>
@@ -33,10 +55,10 @@
   </q-list>
 
   <q-btn
-    class="create-server-btn"
+    class="create-channel-btn"
     color="primary"
-    label="Create New Server"
-    @click="showCreateServerDialog = true"
+    label="Create New Channel"
+    @click="showCreateChannelDialog = true"
   />
 
   <q-dialog v-model="showInvitePopup">
@@ -61,16 +83,17 @@
       </q-card-section>
       <q-card-section>
         <q-list bordered>
-          <q-item
-            v-for="user in genericUsers"
-            :key="user.username"
-          >
+          <q-item v-for="user in genericUsers" :key="user.username">
             <q-item-section>
               <q-item-label>{{ user.username }}</q-item-label>
               <q-item-label caption>Votes to Kick: 0/3</q-item-label>
             </q-item-section>
             <q-item-section side>
-              <q-btn color="negative" label="Kick" @click="kickUser(user.username)" />
+              <q-btn
+                color="negative"
+                label="Kick"
+                @click="kickUser(user.username)"
+              />
             </q-item-section>
           </q-item>
         </q-list>
@@ -84,31 +107,30 @@
   <q-dialog v-model="showCreateServerDialog">
     <q-card>
       <q-card-section>
-        <div class="text-h6">Create New Server</div>
+        <div class="text-h6">Create New Channel</div>
       </q-card-section>
       <q-card-section>
         <q-input
-          v-model="newServerName"
+          v-model="newChannelName"
           label="Channel Name"
           filled
           :error="nameError"
           :error-message="nameErrorMessage"
         />
         <q-select
-          v-model="newServerType"
+          v-model="newChannelType"
           :options="channelTypes"
           label="Channel Type"
           filled
         />
       </q-card-section>
       <q-card-actions align="right">
-        <q-btn flat label="Cancel" @click="showCreateServerDialog = false" />
+        <q-btn flat label="Cancel" @click="showCreateChannelDialog = false" />
         <q-btn color="primary" label="Create" @click="createNewServer" />
       </q-card-actions>
     </q-card>
   </q-dialog>
 </template>
-
 
 <script>
 import { mapGetters } from 'vuex';
@@ -138,25 +160,28 @@ export default {
   watch: {
     commandJoin(newVal) {
       if (newVal && newVal.command && newVal.command.channelName) {
-
         const channelName = newVal.command.channelName;
 
-
         const hiddenChannelIndex = this.hiddenChannels.findIndex(
-          (channel) => channel.label === channelName && channel.caption === 'Public'
+          (channel) =>
+            channel.label === channelName && channel.caption === 'Public'
         );
         if (hiddenChannelIndex !== -1) {
-          console.log('Hidden channel found:', this.hiddenChannels[hiddenChannelIndex]);
-          const hiddenChannel = this.hiddenChannels.splice(hiddenChannelIndex, 1)[0];
+          console.log(
+            'Hidden channel found:',
+            this.hiddenChannels[hiddenChannelIndex]
+          );
+          const hiddenChannel = this.hiddenChannels.splice(
+            hiddenChannelIndex,
+            1
+          )[0];
           this.channels.unshift(hiddenChannel);
           return;
         }
 
-        const isNameUsed = this.channels.some(
-          (channel) => channel.label === channelName
-        ) || this.hiddenChannels.some(
-          (channel) => channel.label === channelName
-        );
+        const isNameUsed =
+          this.channels.some((channel) => channel.label === channelName) ||
+          this.hiddenChannels.some((channel) => channel.label === channelName);
 
         if (isNameUsed) {
           this.nameError = true;
@@ -214,12 +239,12 @@ export default {
         caption: i % 2 === 0 ? 'Private' : 'Public',
         buttonLabel: i % 3 === 0 ? 'Delete Channel' : 'Leave Channel',
         isnew: false,
-        newMessage: i % 5 === 0 ? true : false, 
+        newMessage: i % 5 === 0 ? true : false,
       });
     }
     for (let k = 1; k <= 10; k++) {
       this.hiddenChannels.push({
-        id: k+1000,
+        id: k + 1000,
         icon: k % 2 === 0 ? 'lock' : 'public',
         label: `Hidden Channel${k}`,
         caption: k % 2 === 0 ? 'Private' : 'Public',
@@ -240,14 +265,14 @@ export default {
       }
     },
     createNewServer() {
-      if (this.newServerName.trim() === '') {
+      if (this.newChannelName.trim() === '') {
         this.nameError = true;
         this.nameErrorMessage = 'Channel name is required';
         return;
       }
 
       const isNameUsed = this.channels.some(
-        (channel) => channel.label === this.newServerName
+        (channel) => channel.label === this.newChannelName
       );
       if (isNameUsed) {
         this.nameError = true;
@@ -258,18 +283,18 @@ export default {
       const newChannel = {
         id: this.channels.length + 1,
         icon: 'public',
-        label: this.newServerName,
-        caption: this.newServerType,
+        label: this.newChannelName,
+        caption: this.newChannelType,
         buttonLabel: 'Zrušiť kanál',
         isnew: true,
       };
 
       this.channels.unshift(newChannel);
-      this.newServerName = '';
-      this.newServerType = 'Public';
+      this.newChannelName = '';
+      this.newChannelType = 'Public';
       this.nameError = false;
       this.nameErrorMessage = '';
-      this.showCreateServerDialog = false;
+      this.showCreateChannelDialog = false;
     },
   },
 };
@@ -300,8 +325,8 @@ export default {
   padding-bottom: 60px;
 }
 
-.create-server-btn {
-  position:fixed;
+.create-channel-btn {
+  position: fixed;
   bottom: 0px;
   width: 100%;
 }

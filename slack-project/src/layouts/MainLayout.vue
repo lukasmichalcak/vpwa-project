@@ -24,7 +24,7 @@
       class="left-drawer"
     >
       <!-- Left drawer content -->
-      <KeepAlive><ServerListComponent /></KeepAlive>
+      <KeepAlive><ChannelListComponent /></KeepAlive>
     </q-drawer>
 
     <q-drawer
@@ -64,7 +64,7 @@
 </template>
 
 <script>
-import ServerListComponent from 'components/ServerListComponent.vue';
+import ChannelListComponent from 'components/ChannelListComponent.vue';
 import CommandLineComponent from 'src/components/CommandLineComponent.vue';
 import UserAvatarComponent from 'src/components/UserAvatarComponent.vue';
 import InfiniteScrollComponent from 'src/components/InfiniteScrollComponent.vue';
@@ -73,7 +73,7 @@ import NotificationsComponent from 'src/components/NotificationsComponent.vue';
 
 export default {
   components: {
-    ServerListComponent,
+    ChannelListComponent,
     CommandLineComponent,
     UserAvatarComponent,
     InfiniteScrollComponent,
