@@ -104,7 +104,7 @@
     </q-card>
   </q-dialog>
 
-  <q-dialog v-model="showCreateServerDialog">
+  <q-dialog v-model="showCreateChannelDialog">
     <q-card>
       <q-card-section>
         <div class="text-h6">Create New Channel</div>
@@ -141,21 +141,21 @@ export default {
       channels: [],
       hiddenChannels: [],
       selectedChannel: null,
-      showCreateServerDialog: false,
+      showCreateChannelDialog: false,
       showInvitePopup: false,
       showKickPopup: false,
-      newServerName: '',
-      newServerType: 'Public',
+      newChannelName: '',
+      newChannelType: 'Public',
       channelTypes: ['Public', 'Private'],
       nameError: false,
       nameErrorMessage: '',
     };
   },
   computed: {
-    ...mapGetters('module-example', ['commandJoin']), // Map Vuex getter
-    ...mapGetters('module-example', ['commandQuit']), // Map Vuex getter
-    ...mapGetters('module-example', ['commandCancel']), // Map Vuex getter
-    ...mapGetters('module-example', ['genericUsers']), // Map Vuex getter
+    ...mapGetters('module-example', ['commandJoin']),
+    ...mapGetters('module-example', ['commandQuit']),
+    ...mapGetters('module-example', ['commandCancel']),
+    ...mapGetters('module-example', ['genericUsers']),
   },
   watch: {
     commandJoin(newVal) {
@@ -230,7 +230,6 @@ export default {
     },
   },
   created() {
-    // Populate initial channels list
     for (let i = 1; i <= 100; i++) {
       this.channels.push({
         id: i,
@@ -282,7 +281,7 @@ export default {
 
       const newChannel = {
         id: this.channels.length + 1,
-        icon: 'public',
+        icon: this.newChannelType === 'Public' ? 'public' : 'lock',
         label: this.newChannelName,
         caption: this.newChannelType,
         buttonLabel: 'Zrušiť kanál',
@@ -301,12 +300,6 @@ export default {
 </script>
 
 <style scoped>
-/* .create-server-btn {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 1000;
-} */
 .rounded-borders {
   border-radius: 8px;
 }
