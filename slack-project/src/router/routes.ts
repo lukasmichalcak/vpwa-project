@@ -16,11 +16,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/MainLayout.vue'),
     children: [
       {
-        path: 'server-list',
-        component: () => import('components/ServerListComponent.vue'),
+        path: 'channel-list',
+        component: () => import('components/ChannelListComponent.vue'),
       },
       {
-        path: 'comand-line',
+        path: 'command-line',
         component: () => import('components/CommandLineComponent.vue'),
       },
     ],
