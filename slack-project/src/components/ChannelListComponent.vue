@@ -16,24 +16,38 @@
         <q-badge
           v-if="channel.isnew"
           color="green"
-          class="q-ml-sm"
+          class="q-ml-sm badge-width"
           label="New Channel"
         />
         <q-badge
           v-if="channel.newMessage"
           color="primary"
-          class="q-ml-sm"
+          class="q-ml-sm badge-width"
           label="New Message"
         />
       </q-item-section>
       <q-item-section side>
         <q-btn icon="more_vert" flat round dense>
-          <q-popup-proxy>
-            <q-btn
-              color="negative"
-              :label="channel.buttonLabel"
-              @click="removeChannel(channel.id)"
-            />
+          <q-popup-proxy anchor="top right" self="top left">
+            <q-card>
+              <q-card-section>
+                <q-btn
+                  color="positive"
+                  label="Invite"
+                  @click="showInvitePopup = true"
+                />
+                <q-btn
+                  color="negative"
+                  label="Kick"
+                  @click="showKickPopup = true"
+                />
+                <q-btn
+                  color="negative"
+                  :label="channel.buttonLabel"
+                  @click="removeChannel(channel.id)"
+                />
+              </q-card-section>
+            </q-card>
           </q-popup-proxy>
         </q-btn>
       </q-item-section>
@@ -47,7 +61,50 @@
     @click="showCreateChannelDialog = true"
   />
 
-  <q-dialog v-model="showCreateChannelDialog">
+  <q-dialog v-model="showInvitePopup">
+    <q-card>
+      <q-card-section>
+        <div class="text-h6">Invite User</div>
+      </q-card-section>
+      <q-card-section>
+        <q-input v-model="inviteUsername" label="Enter Username" filled />
+      </q-card-section>
+      <q-card-actions align="right">
+        <q-btn flat label="Cancel" @click="showInvitePopup = false" />
+        <q-btn color="primary" label="Invite" @click="inviteUser" />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+
+  <q-dialog v-model="showKickPopup">
+    <q-card>
+      <q-card-section>
+        <div class="text-h6">Kick Users</div>
+      </q-card-section>
+      <q-card-section>
+        <q-list bordered>
+          <q-item v-for="user in genericUsers" :key="user.username">
+            <q-item-section>
+              <q-item-label>{{ user.username }}</q-item-label>
+              <q-item-label caption>Votes to Kick: 0/3</q-item-label>
+            </q-item-section>
+            <q-item-section side>
+              <q-btn
+                color="negative"
+                label="Kick"
+                @click="kickUser(user.username)"
+              />
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </q-card-section>
+      <q-card-actions align="right">
+        <q-btn flat label="Close" @click="showKickPopup = false" />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+
+  <q-dialog v-model="showCreateServerDialog">
     <q-card>
       <q-card-section>
         <div class="text-h6">Create New Channel</div>
@@ -84,9 +141,11 @@ export default {
       channels: [],
       hiddenChannels: [],
       selectedChannel: null,
-      showCreateChannelDialog: false,
-      newChannelName: '',
-      newChannelType: 'Public',
+      showCreateServerDialog: false,
+      showInvitePopup: false,
+      showKickPopup: false,
+      newServerName: '',
+      newServerType: 'Public',
       channelTypes: ['Public', 'Private'],
       nameError: false,
       nameErrorMessage: '',
@@ -96,10 +155,10 @@ export default {
     ...mapGetters('module-example', ['commandJoin']), // Map Vuex getter
     ...mapGetters('module-example', ['commandQuit']), // Map Vuex getter
     ...mapGetters('module-example', ['commandCancel']), // Map Vuex getter
+    ...mapGetters('module-example', ['genericUsers']), // Map Vuex getter
   },
   watch: {
     commandJoin(newVal) {
-      // Access the nested command object
       if (newVal && newVal.command && newVal.command.channelName) {
         const channelName = newVal.command.channelName;
 
@@ -135,7 +194,8 @@ export default {
           icon: newVal.command.isPrivate ? 'lock' : 'public',
           label: newVal.command.channelName,
           caption: newVal.command.isPrivate ? 'Private' : 'Public',
-          buttonLabel: 'Zrušiť kanál',
+          buttonLabel: 'Delete Channel',
+          isnew: true,
         });
         console.log('Updated channels:', this.channels);
       }
@@ -177,7 +237,7 @@ export default {
         icon: i % 2 === 0 ? 'lock' : 'public',
         label: `Channel${i}`,
         caption: i % 2 === 0 ? 'Private' : 'Public',
-        buttonLabel: i % 3 === 0 ? 'Zrušiť kanál' : 'Opustiť kanál',
+        buttonLabel: i % 3 === 0 ? 'Delete Channel' : 'Leave Channel',
         isnew: false,
         newMessage: i % 5 === 0 ? true : false,
       });
@@ -188,7 +248,7 @@ export default {
         icon: k % 2 === 0 ? 'lock' : 'public',
         label: `Hidden Channel${k}`,
         caption: k % 2 === 0 ? 'Private' : 'Public',
-        buttonLabel: 'Opustiť kanál',
+        buttonLabel: 'Leave Channel',
         isnew: true,
         newMessage: k % 3 === 0 ? true : false,
       });
@@ -269,5 +329,12 @@ export default {
   position: fixed;
   bottom: 0px;
   width: 100%;
+}
+
+.badge-width {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 60%;
 }
 </style>

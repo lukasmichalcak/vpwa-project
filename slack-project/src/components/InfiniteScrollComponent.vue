@@ -1,6 +1,6 @@
 <template>
-  <div class="q-pa-md row justify-center">
-    <div style="width: 100%; max-width: 400px" ref="scrollContainer">
+  <div class="q-pa-md">
+    <div ref="scrollContainer">
       <q-infinite-scroll @load="onLoad" reverse>
         <template v-slot:loading>
           <div class="row justify-center q-my-md">
@@ -8,7 +8,6 @@
           </div>
         </template>
 
-        <!-- Dynamically render all messages from Vuex -->
         <div
           v-for="(message, index) in messages"
           :key="index"
@@ -19,7 +18,6 @@
             :class="message.sent ? 'self-end' : 'self-start'"
             style="max-width: 75%"
           >
-            <!-- Special case: Message that shows typing indicator -->
             <div v-if="message.typing">
               <q-chat-message
                 :name="message.name"
@@ -35,6 +33,8 @@
                 v-model:showing="showMessage"
                 transition-show="scale"
                 transition-hide="scale"
+                anchor="top right"
+                self="top left"
               >
                 <div class="q-pa-md bg-primary text-white" style="width: auto">
                   <div class="text-subtitle2">
@@ -62,7 +62,6 @@
 </template>
 
 <script>
-// import { ref, nextTick } from 'vue';
 import { mapGetters, mapActions } from 'vuex';
 import verifierLogo from '@/assets/images/verifier_logo.png';
 
@@ -85,51 +84,18 @@ export default {
     ...mapActions('module-example', ['addHistoricMessage']),
 
     getMessageBgColor(message) {
-      // Check if the message text contains "@Michael"
       if (message.text && message.text.some((t) => t.includes('@Kevin '))) {
         return 'warning'; // Highlight with 'warning' color if '@Michael' is mentioned
       }
-      // If it's the current user's message, use 'info' color
       if (message.sent) {
         return 'info';
       }
-      // Default background color for other users
       return 'primary';
     },
-
-    // scrollToBottom() {
-    //   this.$nextTick(() => {
-    //     const scrollContainer = this.$refs.scrollContainer;
-    //     console.log(this.$refs);
-    //     console.log(this.$refs.scrollContainer);
-    //     if (scrollContainer) {
-    //       scrollContainer.scrollTop = scrollContainer.scrollHeight;
-    //     } else {
-    //       console.log('Scroll container not found');
-    //     }
-    //   });
-    // },
-
-    // scrollToBottom() {
-    //   this.$nextTick(() => {
-    //     // Reference the correct scrollable element
-    //     const scrollContainer = document.querySelector(
-    //       '.q-page-container.center-content'
-    //     );
-
-    //     if (scrollContainer) {
-    //       console.log('scrollHeight:', scrollContainer.scrollHeight);
-    //       console.log('scrollTop before:', scrollContainer.scrollTop);
-    //       scrollContainer.scrollTop = scrollContainer.scrollHeight;
-    //       console.log('scrollTop after:', scrollContainer.scrollTop);
-    //     }
-    //   });
-    // },
 
     onLoad(index, done) {
       if (!this.isInitialLoad) {
         const scrollContainer = document.querySelector('.center-content');
-        //console.log(scrollContainer);
         const previousScrollHeight = scrollContainer.scrollHeight;
         const previousScrollTop = scrollContainer.scrollTop;
 
@@ -164,7 +130,6 @@ export default {
   },
 
   created() {
-    // Populate initial static messages (static messages or preloaded ones)
     this.addMessage({
       name: 'Jane',
       avatar: 'https://cdn.quasar.dev/img/avatar5.jpg',
@@ -321,17 +286,23 @@ export default {
       sent: true,
     });
 
-    // Add the special message for "typing" simulation
     this.addMessage({
       name: 'Jane',
       avatar: 'https://cdn.quasar.dev/img/avatar5.jpg',
-      typing: true, // Special flag for typing simulation
+      typing: true,
     });
 
     this.$nextTick(() => {
       this.$emit('static-messages-loaded');
-      this.isInitialLoad = false; // Now allow onLoad to be executed properly
+      this.isInitialLoad = false;
     });
   },
 };
 </script>
+
+<style scoped>
+.scroll-container {
+  width: 100%;
+  max-width: 100%;
+}
+</style>
