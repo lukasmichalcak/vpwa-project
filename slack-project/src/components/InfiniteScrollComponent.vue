@@ -1,6 +1,6 @@
 <template>
-  <div class="q-pa-md row justify-center">
-    <div style="width: 100%; max-width: 400px" ref="scrollContainer">
+  <div class="q-pa-md">
+    <div ref="scrollContainer">
       <q-infinite-scroll @load="onLoad" reverse>
         <template v-slot:loading>
           <div class="row justify-center q-my-md">
@@ -335,3 +335,10 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.scroll-container {
+  width: 100%;
+  max-width: 100%;
+}
+</style>
