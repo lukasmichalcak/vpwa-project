@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="hHh lpR lFr">
+  <q-layout view="hHh lpr lFr">
     <q-header reveal elevated class="bg-primary text-white">
       <q-toolbar>
         <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
@@ -10,6 +10,7 @@
           </q-avatar>
           SKRUPULUS
         </q-toolbar-title>
+        <NotificationsComponent />
         <UserAvatarComponent />
       </q-toolbar>
     </q-header>
@@ -33,12 +34,22 @@
       class="right-drawer"
     >
       <!-- Right drawer content -->
+      <q-btn
+        color="negative"
+        icon="close"
+        flat
+        round
+        dense
+        @click="toggleRightDrawer"
+      />
       <UserListComponent />
     </q-drawer>
 
     <q-page-container class="center-content">
       <router-view />
-      <InfiniteScrollComponent />
+      <q-page>
+        <InfiniteScrollComponent />
+      </q-page>
     </q-page-container>
 
     <q-footer elevated>
@@ -58,6 +69,7 @@ import CommandLineComponent from 'src/components/CommandLineComponent.vue';
 import UserAvatarComponent from 'src/components/UserAvatarComponent.vue';
 import InfiniteScrollComponent from 'src/components/InfiniteScrollComponent.vue';
 import UserListComponent from 'src/components/UserListComponent.vue';
+import NotificationsComponent from 'src/components/NotificationsComponent.vue';
 
 export default {
   components: {
@@ -66,6 +78,7 @@ export default {
     UserAvatarComponent,
     InfiniteScrollComponent,
     UserListComponent,
+    NotificationsComponent,
   },
   props: {
     newChannel: Object,
@@ -102,15 +115,10 @@ export default {
 </script>
 
 <style scoped>
-html,
-body {
-  overflow: hidden; /* Disable the browser scroll */
-}
-
 .left-drawer,
 .right-drawer,
 .center-content {
-  overflow-y: auto; /* Make each section scroll independently */
-  height: 100vh; /* Ensure the sections take up full height */
+  overflow-y: scroll;
+  height: 100vh;
 }
 </style>

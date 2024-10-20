@@ -6,12 +6,15 @@
         <div class="row no-wrap q-pa-md">
           <div class="column">
             <div class="text-h6 q-mb-md">Settings</div>
+            <q-radio v-model="status" val="online" label="Online" />
+            <q-radio v-model="status" val="dnd" label="DND" />
+            <q-radio v-model="status" val="offline" label="Offline" />
           </div>
 
           <q-separator vertical inset class="q-mx-lg" />
 
           <div class="column items-center">
-            <q-avatar size="72px">
+            <q-avatar size="42px">
               <img
                 src="../assets/images/verifier_logo.png"
                 alt="Verifier logo"
@@ -38,6 +41,12 @@
 import { mapGetters, mapActions } from 'vuex';
 
 export default {
+  data() {
+    return {
+      status: 'online',
+    };
+  },
+
   computed: {
     ...mapGetters('module-example', ['username']),
   },
