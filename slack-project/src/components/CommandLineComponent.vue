@@ -12,8 +12,7 @@
       <q-btn
         flat
         round
-        glossy
-        color="positive"
+        color="white"
         icon="send"
         @click="handleEnter"
       />
