@@ -45,10 +45,10 @@
       <UserListComponent />
     </q-drawer>
 
-    <q-page-container class="center-content">
+    <q-page-container class="center-content" ref="containerForInfiniteScroll">
       <router-view />
       <q-page>
-        <InfiniteScrollComponent />
+        <InfiniteScrollComponent @static-messages-loaded="scrollToBottom" />
       </q-page>
     </q-page-container>
 
@@ -57,13 +57,13 @@
         :rightDrawerOpen="rightDrawerOpen"
         @toggleRightDrawer="toggleRightDrawer"
         @createNewChannel="handleCreateNewChannel"
+        @message-sent="scrollToBottom"
       />
     </q-footer>
   </q-layout>
 </template>
 
 <script>
-import { ref } from 'vue';
 import ServerListComponent from 'components/ServerListComponent.vue';
 import CommandLineComponent from 'src/components/CommandLineComponent.vue';
 import UserAvatarComponent from 'src/components/UserAvatarComponent.vue';
@@ -80,36 +80,40 @@ export default {
     UserListComponent,
     NotificationsComponent,
   },
-  props: {
-    newChannel: Object,
-  },
-  setup() {
-    const leftDrawerOpen = ref(false);
-    const rightDrawerOpen = ref(false);
-    const newChannel = ref(null);
-
-    const toggleLeftDrawer = () => {
-      leftDrawerOpen.value = !leftDrawerOpen.value;
-    };
-
-    const toggleRightDrawer = () => {
-      rightDrawerOpen.value = !rightDrawerOpen.value;
-    };
-
-    const handleCreateNewChannel = (channelData) => {
-      console.log(channelData);
-      console.log(newChannel.value);
-      newChannel.value = channelData;
-      console.log(newChannel.value);
-    };
-
+  // props: {
+  //   newChannel: Object,
+  // },
+  data() {
     return {
-      leftDrawerOpen,
-      rightDrawerOpen,
-      toggleLeftDrawer,
-      toggleRightDrawer,
-      handleCreateNewChannel,
+      leftDrawerOpen: false,
+      rightDrawerOpen: false,
+      newChannel: null,
     };
+  },
+  methods: {
+    toggleLeftDrawer() {
+      this.leftDrawerOpen = !this.leftDrawerOpen;
+    },
+    toggleRightDrawer() {
+      this.rightDrawerOpen = !this.rightDrawerOpen;
+    },
+    scrollToBottom() {
+      this.$nextTick(() => {
+        //const scrollContainer = this.$refs.containerForInfiniteScroll;
+        const scrollContainer = document.querySelector('.center-content');
+
+        if (scrollContainer) {
+          // Scroll to the bottom
+          scrollContainer.scrollTop = scrollContainer.scrollHeight;
+        }
+      });
+    },
+    handleCreateNewChannel(channelData) {
+      console.log(channelData);
+      console.log(this.newChannel);
+      this.newChannel = channelData;
+      console.log(this.newChannel);
+    },
   },
 };
 </script>

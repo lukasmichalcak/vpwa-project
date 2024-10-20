@@ -126,6 +126,14 @@ const actions: ActionTree<ExampleStateInterface, StateInterface> = {
     commit('SET_GENERIC_USERS', users);
   },
 
+  addMessage({ commit }, message) {
+    commit('ADD_MESSAGE', message);
+  },
+
+  addHistoricMessage({ commit }, message) {
+    commit('ADD_HISTORIC_MESSAGE', message);
+  },
+
   join({ commit }, command) {
     commit('SET_COMMAND_JOIN', command);
   },

@@ -54,6 +54,14 @@ const mutation: MutationTree<ExampleStateInterface> = {
     state.user = null;
   },
 
+  ADD_MESSAGE(state, message) {
+    state.messages.push(message);
+  },
+
+  ADD_HISTORIC_MESSAGE(state, message) {
+    state.messages.unshift(message);
+  },
+
   SET_LOGIN_ERROR(state, error) {
     state.loginError = error;
   },
