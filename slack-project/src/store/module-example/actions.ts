@@ -134,6 +134,10 @@ const actions: ActionTree<ExampleStateInterface, StateInterface> = {
     commit('ADD_HISTORIC_MESSAGE', message);
   },
 
+  addUnfinishedMessage({ commit }, unfinished_message) {
+    commit('ADD_UNFINISHED_MESSAGE', unfinished_message);
+  },
+
   join({ commit }, command) {
     commit('SET_COMMAND_JOIN', command);
   },

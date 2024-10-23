@@ -18,34 +18,7 @@
             :class="message.sent ? 'self-end' : 'self-start'"
             style="max-width: 75%"
           >
-            <div v-if="message.typing">
-              <q-chat-message
-                :name="message.name"
-                :avatar="message.avatar"
-                text-color="white"
-                :bg-color="getMessageBgColor(message)"
-                @click="showMessage = true"
-              >
-                <q-spinner-dots size="2rem" />
-              </q-chat-message>
-
-              <q-popup-proxy
-                v-model:showing="showMessage"
-                transition-show="scale"
-                transition-hide="scale"
-                anchor="top right"
-                self="top left"
-              >
-                <div class="q-pa-md bg-primary text-white" style="width: auto">
-                  <div class="text-subtitle2">
-                    Excellent!!! Can't wait to s...
-                  </div>
-                </div>
-              </q-popup-proxy>
-            </div>
-
             <q-chat-message
-              v-else
               :name="message.name"
               :avatar="message.avatar"
               :text="message.text"
@@ -53,6 +26,41 @@
               :bg-color="getMessageBgColor(message)"
               text-color="white"
             />
+          </div>
+        </div>
+        <div
+          v-for="(message, index) in unfinishedMessages"
+          :key="index"
+          :class="message.sent ? 'row justify-end' : 'row justify-start'"
+          class="caption q-py-sm"
+        >
+          <div
+            :class="message.sent ? 'self-end' : 'self-start'"
+            style="max-width: 75%"
+          >
+            <q-chat-message
+              :name="message.name"
+              :avatar="message.avatar"
+              text-color="white"
+              :bg-color="getMessageBgColor(message)"
+              @click="showMessage = true"
+            >
+              <q-spinner-dots size="2rem" />
+            </q-chat-message>
+
+            <q-popup-proxy
+              v-model:showing="showMessage"
+              transition-show="scale"
+              transition-hide="scale"
+              anchor="top right"
+              self="top left"
+            >
+              <div class="q-pa-md bg-primary text-white" style="width: auto">
+                <div class="text-subtitle2">
+                  Excellent!!! Can't wait to s...
+                </div>
+              </div>
+            </q-popup-proxy>
           </div>
         </div>
       </q-infinite-scroll>
@@ -76,11 +84,13 @@ export default {
 
   computed: {
     ...mapGetters('module-example', ['messages']),
+    ...mapGetters('module-example', ['unfinishedMessages']),
   },
 
   methods: {
     ...mapActions('module-example', ['addMessage']),
     ...mapActions('module-example', ['addHistoricMessage']),
+    ...mapActions('module-example', ['addUnfinishedMessage']),
 
     getMessageBgColor(message) {
       if (message.text && message.text.some((t) => t.includes('@Kevin '))) {
@@ -285,7 +295,7 @@ export default {
       sent: true,
     });
 
-    this.addMessage({
+    this.addUnfinishedMessage({
       name: 'Jane',
       avatar: 'https://cdn.quasar.dev/img/avatar5.jpg',
       typing: true,
