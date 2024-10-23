@@ -62,6 +62,10 @@ const mutation: MutationTree<ExampleStateInterface> = {
     state.messages.unshift(message);
   },
 
+  ADD_UNFINISHED_MESSAGE(state, unfinished_message) {
+    state.unfinished_messages.push(unfinished_message);
+  },
+
   SET_LOGIN_ERROR(state, error) {
     state.loginError = error;
   },
