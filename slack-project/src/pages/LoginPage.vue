@@ -69,42 +69,68 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { useAuthStore } from 'src/store/auth';
+import { ref } from 'vue'
+import { useRouter } from 'vue-router';
 
 export default {
-  data() {
-    return {
+  setup() {
+    const router = useRouter();
+    const auth = useAuthStore();
+    const form = ref({
       username: '',
       password: '',
-      visiblePassword: false,
+    });
+
+    async function onSubmit() {
+      await auth.login(form);
+      router.push('/main');
+    }
+
+    return {
+      form,
+      onSubmit,
     };
   },
-
-  computed: {
-    ...mapGetters('module-example', ['loginError', 'genericUsers']),
-  },
-
-  mounted() {
-    if (!this.genericUsers || this.genericUsers.length === 0) {
-      this.generateUsers();
-    }
-  },
-
-  methods: {
-    ...mapActions('module-example', ['login', 'generateUsers']),
-
-    togglePasswordVisibility() {
-      this.visiblePassword = !this.visiblePassword;
-    },
-
-    async onSubmit() {
-      try {
-        await this.login({ username: this.username, password: this.password });
-        this.$router.push('/main');
-      } catch (error) {
-        console.error('Login failed:', error);
-      }
-    },
-  },
 };
+
+
+// import { mapActions, mapGetters } from 'vuex';
+
+// export default {
+//   data() {
+//     return {
+//       username: '',
+//       password: '',
+//       visiblePassword: false,
+//     };
+//   },
+
+//   computed: {
+//     ...mapGetters('module-example', ['loginError', 'genericUsers']),
+//   },
+
+//   mounted() {
+//     if (!this.genericUsers || this.genericUsers.length === 0) {
+//       this.generateUsers();
+//     }
+//   },
+
+//   methods: {
+//     ...mapActions('module-example', ['login', 'generateUsers']),
+
+//     togglePasswordVisibility() {
+//       this.visiblePassword = !this.visiblePassword;
+//     },
+
+//     async onSubmit() {
+//       try {
+//         await this.login({ username: this.username, password: this.password });
+//         this.$router.push('/main');
+//       } catch (error) {
+//         console.error('Login failed:', error);
+//       }
+//     },
+//   },
+// };
 </script>

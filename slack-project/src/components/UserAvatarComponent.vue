@@ -38,31 +38,51 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { useRouter } from 'vue-router'
+import { useAuthStore } from 'src/store/auth'
 
 export default {
-  data() {
+  setup() {
+    const router = useRouter();
+    const auth = useAuthStore();
+
+    async function logoutUser() {
+      await auth.logout();
+      router.push('/login');
+    }
     return {
-      status: 'online',
+      logoutUser,
     };
-  },
+  }
+  
+}
 
-  computed: {
-    ...mapGetters('module-example', ['username']),
-  },
 
-  methods: {
-    ...mapActions('module-example', ['logout']),
+// import { mapGetters, mapActions } from 'vuex';
 
-    logoutUser() {
-      this.logout()
-        .then(() => {
-          this.$router.push('/login');
-        })
-        .catch((error) => {
-          console.error('Login failed:', error);
-        });
-    },
-  },
-};
+// export default {
+//   data() {
+//     return {
+//       status: 'online',
+//     };
+//   },
+
+//   computed: {
+//     ...mapGetters('module-example', ['username']),
+//   },
+
+//   methods: {
+//     ...mapActions('module-example', ['logout']),
+
+//     logoutUser() {
+//       this.logout()
+//         .then(() => {
+//           this.$router.push('/login');
+//         })
+//         .catch((error) => {
+//           console.error('Login failed:', error);
+//         });
+//     },
+//   },
+// };
 </script>
