@@ -6,7 +6,7 @@ export interface ExampleStateInterface {
     username: string;
     email: string;
     password: string;
-  }; //password will be hashed later
+  };
   genericUsers:
     | null
     | {
@@ -16,6 +16,7 @@ export interface ExampleStateInterface {
         email: string;
         password: string;
       }[];
+  token: string | null;
   messages: object[];
   unfinished_messages: object[];
   loginError: string;
@@ -30,6 +31,7 @@ function state(): ExampleStateInterface {
     prop: false,
     user: null,
     genericUsers: null,
+    token: null,
     messages: [],
     unfinished_messages: [],
     loginError: '',

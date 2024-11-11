@@ -3,19 +3,32 @@ import { loginValidator, registerValidator } from '#validators/auth'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class AuthController {
-  async register({ request }: HttpContext) {
-    const data = await request.validateUsing(registerValidator)
+  async register({ request, response }: HttpContext) {
+    try {
+      const data = await request.validateUsing(registerValidator)
 
-    const user = await User.create(data)
+      const user = await User.create(data)
+      console.log('User registered:', user)
 
-    return User.accessTokens.create(user)
+      return User.accessTokens.create(user)
+    } catch (error) {
+      console.error('Error during registration:', error)
+      return response.badRequest({ error: error })
+    }
   }
 
-  async login({ request }: HttpContext) {
-    const { email, password } = await request.validateUsing(loginValidator)
-    const user = await User.verifyCredentials(email, password)
+  async login({ request, response }: HttpContext) {
+    const { username, password } = await request.validateUsing(loginValidator)
+    console.log('Received login request for username:', username)
 
-    return User.accessTokens.create(user)
+    try {
+      const user = await User.verifyCredentials(username, password)
+      console.log('User verified:', user)
+      return User.accessTokens.create(user)
+    } catch (error) {
+      console.error('Error during login:', error)
+      return response.badRequest({ error: 'Invalid credentials' })
+    }
   }
 
   async logout({ auth }: HttpContext) {

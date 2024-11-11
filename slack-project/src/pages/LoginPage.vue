@@ -69,68 +69,32 @@
 </template>
 
 <script>
-import { useAuthStore } from 'src/store/auth';
-import { ref } from 'vue'
-import { useRouter } from 'vue-router';
+import { mapActions, mapGetters } from 'vuex';
 
 export default {
-  setup() {
-    const router = useRouter();
-    const auth = useAuthStore();
-    const form = ref({
+  data() {
+    return {
       username: '',
       password: '',
-    });
-
-    async function onSubmit() {
-      await auth.login(form);
-      router.push('/main');
-    }
-
-    return {
-      form,
-      onSubmit,
+      visiblePassword: false,
     };
   },
+  computed: {
+    ...mapGetters('module-example', ['loginError']),
+  },
+  methods: {
+    ...mapActions('module-example', ['login']),
+
+    togglePasswordVisibility() {
+      this.visiblePassword = !this.visiblePassword;
+    },
+
+    async onSubmit() {
+      await this.login({ username: this.username, password: this.password });
+      if (!this.loginError) {
+        this.$router.push('/main');
+      }
+    },
+  },
 };
-
-
-// import { mapActions, mapGetters } from 'vuex';
-
-// export default {
-//   data() {
-//     return {
-//       username: '',
-//       password: '',
-//       visiblePassword: false,
-//     };
-//   },
-
-//   computed: {
-//     ...mapGetters('module-example', ['loginError', 'genericUsers']),
-//   },
-
-//   mounted() {
-//     if (!this.genericUsers || this.genericUsers.length === 0) {
-//       this.generateUsers();
-//     }
-//   },
-
-//   methods: {
-//     ...mapActions('module-example', ['login', 'generateUsers']),
-
-//     togglePasswordVisibility() {
-//       this.visiblePassword = !this.visiblePassword;
-//     },
-
-//     async onSubmit() {
-//       try {
-//         await this.login({ username: this.username, password: this.password });
-//         this.$router.push('/main');
-//       } catch (error) {
-//         console.error('Login failed:', error);
-//       }
-//     },
-//   },
-// };
 </script>

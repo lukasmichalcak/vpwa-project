@@ -1,65 +1,65 @@
 <template>
-  <div v-if="auth.user">
-  <q-layout view="hHh lpr lFr">
-    <q-header reveal elevated class="bg-primary text-white">
-      <q-toolbar>
-        <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
+  <div v-if="isAuthenticated">
+    <q-layout view="hHh lpr lFr">
+      <q-header reveal elevated class="bg-primary text-white">
+        <q-toolbar>
+          <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
 
-        <q-toolbar-title>
-          <q-avatar>
-            <q-icon name="question_answer" />
-          </q-avatar>
-          SKRUPULUS
-        </q-toolbar-title>
-        <NotificationsComponent />
-        <UserAvatarComponent />
-      </q-toolbar>
-    </q-header>
+          <q-toolbar-title>
+            <q-avatar>
+              <q-icon name="question_answer" />
+            </q-avatar>
+            SKRUPULUS
+          </q-toolbar-title>
+          <NotificationsComponent />
+          <UserAvatarComponent />
+        </q-toolbar>
+      </q-header>
 
-    <q-drawer
-      show-if-above
-      v-model="leftDrawerOpen"
-      side="left"
-      bordered
-      persistent
-      class="left-drawer"
-    >
-      <KeepAlive><ChannelListComponent /></KeepAlive>
-    </q-drawer>
+      <q-drawer
+        show-if-above
+        v-model="leftDrawerOpen"
+        side="left"
+        bordered
+        persistent
+        class="left-drawer"
+      >
+        <KeepAlive><ChannelListComponent /></KeepAlive>
+      </q-drawer>
 
-    <q-drawer
-      v-model="rightDrawerOpen"
-      side="right"
-      bordered
-      class="right-drawer"
-    >
-      <q-btn
-        color="negative"
-        icon="close"
-        flat
-        round
-        dense
-        @click="toggleRightDrawer"
-      />
-      <UserListComponent />
-    </q-drawer>
+      <q-drawer
+        v-model="rightDrawerOpen"
+        side="right"
+        bordered
+        class="right-drawer"
+      >
+        <q-btn
+          color="negative"
+          icon="close"
+          flat
+          round
+          dense
+          @click="toggleRightDrawer"
+        />
+        <UserListComponent />
+      </q-drawer>
 
-    <q-page-container class="center-content" ref="containerForInfiniteScroll">
-      <router-view />
-      <q-page>
-        <InfiniteScrollComponent @static-messages-loaded="scrollToBottom" />
-      </q-page>
-    </q-page-container>
+      <q-page-container class="center-content" ref="containerForInfiniteScroll">
+        <router-view />
+        <q-page>
+          <InfiniteScrollComponent @static-messages-loaded="scrollToBottom" />
+        </q-page>
+      </q-page-container>
 
-    <q-footer elevated>
-      <CommandLineComponent
-        :rightDrawerOpen="rightDrawerOpen"
-        @toggleRightDrawer="toggleRightDrawer"
-        @createNewChannel="handleCreateNewChannel"
-        @message-sent="scrollToBottom"
-      />
-    </q-footer>
-  </q-layout>
+      <q-footer elevated>
+        <CommandLineComponent
+          :rightDrawerOpen="rightDrawerOpen"
+          @toggleRightDrawer="toggleRightDrawer"
+          @createNewChannel="handleCreateNewChannel"
+          @message-sent="scrollToBottom"
+        />
+      </q-footer>
+    </q-layout>
   </div>
   <div v-else>Not logged in</div>
 </template>
@@ -72,14 +72,9 @@ import InfiniteScrollComponent from 'src/components/InfiniteScrollComponent.vue'
 import UserListComponent from 'src/components/UserListComponent.vue';
 import NotificationsComponent from 'src/components/NotificationsComponent.vue';
 
-import { useAuthStore } from 'src/store/auth'
+import { mapActions, mapGetters } from 'vuex';
 
 export default {
-  setup() {
-    const auth = useAuthStore();
-    auth.me();
-    return {};
-  },
   components: {
     ChannelListComponent,
     CommandLineComponent,
@@ -95,7 +90,15 @@ export default {
       newChannel: null,
     };
   },
+  created() {
+    this.me();
+  },
+  computed: {
+    ...mapGetters('module-example', ['isAuthenticated']),
+  },
+
   methods: {
+    ...mapActions('module-example', ['me']),
     toggleLeftDrawer() {
       this.leftDrawerOpen = !this.leftDrawerOpen;
     },
@@ -105,7 +108,6 @@ export default {
     scrollToBottom() {
       this.$nextTick(() => {
         const scrollContainer = document.querySelector('.center-content');
-
         if (scrollContainer) {
           scrollContainer.scrollTop = scrollContainer.scrollHeight;
         }

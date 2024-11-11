@@ -3,21 +3,16 @@ import { ExampleStateInterface } from './state';
 
 const mutation: MutationTree<ExampleStateInterface> = {
   SET_USER(state, user) {
-    if (state.user) {
-      state.user.firstName = user.firstName;
-      state.user.lastName = user.lastName;
-      state.user.username = user.username;
-      state.user.email = user.email;
-      state.user.password = user.password; // will be hashed later
-    } else {
-      state.user = {
-        firstName: user.firstName,
-        lastName: user.lastName,
-        username: user.username,
-        email: user.email,
-        password: user.password,
-      };
-    }
+    state.user = user;
+  },
+  SET_TOKEN(state, token) {
+    state.token = token;
+    localStorage.setItem('token', token);
+  },
+  CLEAR_AUTH(state) {
+    state.user = null;
+    state.token = null;
+    localStorage.removeItem('token');
   },
 
   SET_FIRST_NAME(state, firstName) {
