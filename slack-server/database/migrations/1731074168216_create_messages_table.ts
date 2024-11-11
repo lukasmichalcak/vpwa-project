@@ -14,6 +14,7 @@ export default class extends BaseSchema {
         .inTable('channels')
         .onDelete('CASCADE')
       table.text('content').notNullable()
+      table.timestamps(true, true)
     })
   }
 
