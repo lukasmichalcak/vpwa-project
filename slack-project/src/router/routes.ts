@@ -8,6 +8,7 @@ const routes: RouteRecordRaw[] = [
 
   {
     path: '/login',
+    name: 'login',
     component: () => import('pages/LoginPage.vue'), //might include child component
   },
 
@@ -28,6 +29,7 @@ const routes: RouteRecordRaw[] = [
 
   {
     path: '/register',
+    name: 'register',
     component: () => import('pages/RegisterPage.vue'),
   },
 

@@ -1,4 +1,5 @@
 <template>
+  <div v-if="auth.user">
   <q-layout view="hHh lpr lFr">
     <q-header reveal elevated class="bg-primary text-white">
       <q-toolbar>
@@ -59,6 +60,8 @@
       />
     </q-footer>
   </q-layout>
+  </div>
+  <div v-else>Not logged in</div>
 </template>
 
 <script>
@@ -69,7 +72,14 @@ import InfiniteScrollComponent from 'src/components/InfiniteScrollComponent.vue'
 import UserListComponent from 'src/components/UserListComponent.vue';
 import NotificationsComponent from 'src/components/NotificationsComponent.vue';
 
+import { useAuthStore } from 'src/store/auth'
+
 export default {
+  setup() {
+    const auth = useAuthStore();
+    auth.me();
+    return {};
+  },
   components: {
     ChannelListComponent,
     CommandLineComponent,

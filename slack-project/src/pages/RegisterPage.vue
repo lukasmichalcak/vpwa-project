@@ -87,46 +87,83 @@
   </q-layout>
 </template>
 
+
+
+
+
 <script>
-import { mapActions, mapGetters } from 'vuex';
+
+import { useAuthStore } from 'src/store/auth';
+import { ref } from 'vue'
+import { useRouter } from 'vue-router';
+
 
 export default {
-  data() {
-    return {
+  setup() {
+    const router = useRouter();
+    const auth = useAuthStore();
+    const form = ref({
       firstName: '',
       lastName: '',
       username: '',
       email: '',
       password: '',
-      visiblePassword: false,
+    });
+
+    async function onSubmit() {
+      await auth.register(form);
+      router.push('/main');
+    }
+
+    return {
+      form,
+      onSubmit,
     };
   },
-
-  computed: {
-    ...mapGetters('module-example', ['registrationError']),
-  },
-
-  methods: {
-    ...mapActions('module-example', ['register']),
-
-    togglePasswordVisibility() {
-      this.visiblePassword = !this.visiblePassword;
-    },
-    async onSubmit() {
-      this.register({
-        firstName: this.firstName,
-        lastName: this.lastName,
-        username: this.username,
-        email: this.email,
-        password: this.password,
-      })
-        .then(() => {
-          this.$router.push('/main');
-        })
-        .catch((error) => {
-          console.error('Registration failed:', error);
-        });
-    },
-  },
 };
+
+
+
+// import { mapActions, mapGetters } from 'vuex';
+
+// export default {
+//   data() {
+//     return {
+//       firstName: '',
+//       lastName: '',
+//       username: '',
+//       email: '',
+//       password: '',
+//       visiblePassword: false,
+//     };
+//   },
+
+//   computed: {
+//     ...mapGetters('module-example', ['registrationError']),
+//   },
+
+//   methods: {
+//     ...mapActions('module-example', ['register']),
+
+//     togglePasswordVisibility() {
+//       this.visiblePassword = !this.visiblePassword;
+//     },
+//     async onSubmit() {
+//       this.register({
+//         firstName: this.firstName,
+//         lastName: this.lastName,
+//         username: this.username,
+//         email: this.email,
+//         password: this.password,
+//       })
+//         .then(() => {
+//           this.$router.push('/main');
+//         })
+//         .catch((error) => {
+//           console.error('Registration failed:', error);
+//         });
+//     },
+//   },
+// };
 </script>
+
