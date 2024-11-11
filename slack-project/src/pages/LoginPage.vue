@@ -79,30 +79,20 @@ export default {
       visiblePassword: false,
     };
   },
-
   computed: {
-    ...mapGetters('module-example', ['loginError', 'genericUsers']),
+    ...mapGetters('module-example', ['loginError']),
   },
-
-  mounted() {
-    if (!this.genericUsers || this.genericUsers.length === 0) {
-      this.generateUsers();
-    }
-  },
-
   methods: {
-    ...mapActions('module-example', ['login', 'generateUsers']),
+    ...mapActions('module-example', ['login']),
 
     togglePasswordVisibility() {
       this.visiblePassword = !this.visiblePassword;
     },
 
     async onSubmit() {
-      try {
-        await this.login({ username: this.username, password: this.password });
+      await this.login({ username: this.username, password: this.password });
+      if (!this.loginError) {
         this.$router.push('/main');
-      } catch (error) {
-        console.error('Login failed:', error);
       }
     },
   },

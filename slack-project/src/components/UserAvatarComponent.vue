@@ -46,22 +46,18 @@ export default {
       status: 'online',
     };
   },
-
   computed: {
     ...mapGetters('module-example', ['username']),
   },
-
   methods: {
     ...mapActions('module-example', ['logout']),
-
-    logoutUser() {
-      this.logout()
-        .then(() => {
-          this.$router.push('/login');
-        })
-        .catch((error) => {
-          console.error('Login failed:', error);
-        });
+    async logoutUser() {
+      try {
+        await this.logout();
+        this.$router.push('/login');
+      } catch (error) {
+        console.error('Logout failed:', error);
+      }
     },
   },
 };

@@ -3,82 +3,100 @@ import { StateInterface } from '../index';
 import { ExampleStateInterface } from './state';
 
 const actions: ActionTree<ExampleStateInterface, StateInterface> = {
-  login({ commit, getters }, { username, password }) {
-    return new Promise<void>((resolve, reject) => {
-      // Trim whitespace and check if fields are empty
-      if (!username.trim() || !password.trim()) {
-        commit('SET_LOGIN_ERROR', 'All fields must be filled');
-        reject(new Error('Fields missing'));
-      } else {
-        // Unsafe in real practice, this is just for simulating before backend
-        const fetchedUser = getters.genericUsers.find(
-          (user: { username: string; password: string }) =>
-            user.username === username && user.password === password
-        );
+  async login({ commit }, { username, password }) {
+    try {
+      const response = await fetch('http://localhost:3333/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
+      const result = await response.json();
 
-        if (!fetchedUser) {
-          commit('SET_LOGIN_ERROR', 'Username or password incorrect');
-          reject(new Error('Invalid login credentials'));
-        } else {
-          commit('SET_USER', fetchedUser);
-          commit('SET_LOGIN_ERROR', '');
-          resolve();
-        }
+      if (response.ok) {
+        commit('SET_TOKEN', result.token);
+        commit('SET_USER', result.user);
+        commit('SET_LOGIN_ERROR', '');
+      } else {
+        commit(
+          'SET_LOGIN_ERROR',
+          result.message || 'Invalid username or password'
+        );
       }
-    });
+    } catch (error) {
+      commit('SET_LOGIN_ERROR', 'Network error');
+    }
   },
 
-  register(
-    { commit, getters },
+  async register(
+    { commit },
     { firstName, lastName, username, email, password }
   ) {
-    return new Promise<void>((resolve, reject) => {
-      if (
-        !firstName.trim() ||
-        !lastName.trim() ||
-        !username.trim() ||
-        !email.trim() ||
-        !password.trim()
-      ) {
-        commit('SET_REGISTRATION_ERROR', 'All fields must be filled');
-        reject(new Error('Fields missing'));
-      } else if (
-        getters.genericUsers.some(
-          (user: { username: string }) => user.username === username
-        )
-      ) {
-        commit('SET_Registration_ERROR', 'Username already taken');
-        reject(new Error('Taken username'));
-      } else if (
-        getters.genericUsers.some(
-          (user: { email: string }) => user.email === email
-        )
-      ) {
-        commit('SET_Registration_ERROR', 'email already taken');
-        reject(new Error('Taken email'));
-      } else {
-        const user = {
-          firstName: firstName,
-          lastName: lastName,
-          username: username,
-          email: email,
-          password: password,
-        };
-        commit('SET_USER', user);
-        commit('ADD_USER', user);
+    try {
+      const response = await fetch('http://localhost:3333/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          firstName,
+          lastName,
+          username,
+          email,
+          password,
+        }),
+      });
+      const result = await response.json();
+      if (response.ok) {
+        commit('SET_TOKEN', result.token);
+        commit('SET_USER', result.user);
         commit('SET_REGISTRATION_ERROR', '');
-        resolve();
+      } else {
+        commit(
+          'SET_REGISTRATION_ERROR',
+          result.message || 'Registration failed'
+        );
       }
-    });
+    } catch (error) {
+      commit('SET_REGISTRATION_ERROR', 'Network error');
+    }
   },
 
-  logout({ commit }) {
-    commit('SET_USER_NULL');
+  async logout({ commit }) {
+    try {
+      await fetch('http://localhost:3333/logout', { method: 'DELETE' });
+      commit('CLEAR_AUTH');
+    } catch (error) {
+      console.error('Logout failed', error);
+    }
+  },
+
+  async me({ commit, getters }) {
+    try {
+      const response = await fetch('http://localhost:3333/me', {
+        method: 'GET',
+        headers: { Authorization: `Bearer ${getters.token}` },
+      });
+      const result = await response.json();
+      if (response.ok) {
+        commit('SET_USER', result.user);
+      }
+    } catch (error) {
+      console.error('Failed to fetch user', error);
+    }
+  },
+
+  async api({ getters }, { method, url, payload = {} }) {
+    const response = await fetch(`http://localhost:3333${url}`, {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${getters.token}`,
+      },
+      body: method !== 'GET' ? JSON.stringify(payload) : undefined,
+    });
+    return response.json();
   },
 
   generateUsers({ commit, getters }) {
     if (getters.genericUsers) {
-      // preventive guardrail should the function call change somehow
       return;
     }
 
@@ -104,7 +122,7 @@ const actions: ActionTree<ExampleStateInterface, StateInterface> = {
       'Anonymous_user_verySecretPasswd',
       'I will be back',
       'I have the high ground',
-    ]; // not hashed yet
+    ];
     const users: {
       firstName: string;
       lastName: string;
