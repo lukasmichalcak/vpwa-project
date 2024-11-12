@@ -1,5 +1,8 @@
 <template>
   <q-list bordered class="rounded-borders">
+    <div v-if="channels.length === 0" class="text-h6 text-center">
+      No channels found
+    </div>
     <q-item
       v-for="channel in channels"
       :key="channel.id"
@@ -41,17 +44,23 @@
                   label="Kick"
                   @click="showKickPopup = true"
                 />
-                <q-btn
-                  color="negative"
-                  label="temp aaaaaaaaaaaaaaaaaaaaaaaaaaa"
-                  @click="removeChannel(channel.id)"
-                />
+                  <q-btn v-if="userID === channel.adminId"
+                    color="negative"
+                    label="Delete"
+                    @click="deleteChannel(channel.id,'delete')"
+                  />
+                  <q-btn v-else
+                    color="negative"
+                    label="Leave"
+                    @click="deleteChannel(channel.id,'leave')"
+                  />
               </q-card-section>
             </q-card>
           </q-popup-proxy>
         </q-btn>
       </q-item-section>
     </q-item>
+
   </q-list>
 
   <q-btn
@@ -158,6 +167,7 @@ export default {
   methods: {
     ...mapActions('module-example', ['fetchChannels']),
     ...mapActions('module-example', ['createChannel']),
+    ...mapActions('module-example', ['removeChannel']),
     async loadChannels() {
       try {
         this.channels = await this.fetchChannels();
@@ -199,8 +209,11 @@ export default {
     },
 
 
-    removeChannel(id) {
-      console.log('Removing channel:', id);
+    async deleteChannel(id,action) {
+      console.log('removeChannel', id);
+      await this.removeChannel({ id, userID: this.userID, action });
+      console.log('removedChannel', id);
+      await this.fetchChannels();
     },
 
 
