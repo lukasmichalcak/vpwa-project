@@ -9,6 +9,9 @@ const mutation: MutationTree<ExampleStateInterface> = {
     state.token = token;
     localStorage.setItem('token', token);
   },
+  SET_CHANNELS(state, channels) {
+    state.channels = channels;
+  },
   CLEAR_AUTH(state) {
     state.user = null;
     state.token = null;

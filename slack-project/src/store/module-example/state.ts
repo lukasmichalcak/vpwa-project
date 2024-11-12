@@ -1,6 +1,7 @@
 export interface ExampleStateInterface {
   prop: boolean;
   user: null | {
+    id: number;
     firstName: string;
     lastName: string;
     username: string;
@@ -17,6 +18,7 @@ export interface ExampleStateInterface {
         password: string;
       }[];
   token: string | null;
+  channels: object[];
   messages: object[];
   unfinished_messages: object[];
   loginError: string;
@@ -32,6 +34,7 @@ function state(): ExampleStateInterface {
     user: null,
     genericUsers: null,
     token: null,
+    channels: [],
     messages: [],
     unfinished_messages: [],
     loginError: '',
