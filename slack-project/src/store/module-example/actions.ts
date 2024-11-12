@@ -95,6 +95,24 @@ const actions: ActionTree<ExampleStateInterface, StateInterface> = {
     return response.json();
   },
 
+  async fetchChannels({ commit, getters }) {
+    const response = await fetch('http://localhost:3333/channelList', {
+      headers: { Authorization: `Bearer ${getters.token}` },
+    });
+    const channels = await response.json();
+    commit('SET_CHANNELS', channels);
+  },
+
+  async createChannel({ getters }, { name, admin_id, channel_type }) {
+    await fetch('http://localhost:3333/createChannel', {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${getters.token}` },
+      body : JSON.stringify({ name, admin_id, channel_type }), 
+    });
+  },
+
   generateUsers({ commit, getters }) {
     if (getters.genericUsers) {
       return;

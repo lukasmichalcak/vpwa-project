@@ -7,6 +7,12 @@ const getters: GetterTree<ExampleStateInterface, StateInterface> = {
     return state.user;
   },
 
+  userID(state) {
+    if (state.user) {
+      return state.user.id;
+    }
+  },
+
   firstName(state) {
     if (state.user) {
       return state.user.firstName;
@@ -69,6 +75,12 @@ const getters: GetterTree<ExampleStateInterface, StateInterface> = {
 
   token(state) {
     return state.token;
+  },
+
+  channels(state) {
+    console.log('channels:', state.channels);
+    console.log('zbehol som');
+    return state.channels;
   },
 
   genericUsers(state) {
