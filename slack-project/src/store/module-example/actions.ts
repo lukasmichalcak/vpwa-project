@@ -113,6 +113,17 @@ const actions: ActionTree<ExampleStateInterface, StateInterface> = {
     });
   },
 
+  async removeChannel({ getters }, { id, userID, action }) {
+    console.log('removeChannel', { id, userID, action });
+    await fetch('http://localhost:3333/removeChannel', {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${getters.token}` },
+      body : JSON.stringify({ id, userID, action }), 
+    });
+  },
+
   generateUsers({ commit, getters }) {
     if (getters.genericUsers) {
       return;

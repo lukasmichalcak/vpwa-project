@@ -35,3 +35,8 @@ router
   .get('/channelList', [ChannelsController, 'channelList'])
   .as('channels.list')
   .use(middleware.auth())
+
+router
+  .post('/removeChannel', [ChannelsController, 'removeChannel'])
+  .as('channels.remove')
+  .use(middleware.auth())
