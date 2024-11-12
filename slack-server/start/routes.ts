@@ -11,6 +11,9 @@ const AuthController = () => import('#controllers/auth_controller')
 const ChannelsController = () => import('#controllers/channels_controller')
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
+import transmit from '@adonisjs/transmit/services/main'
+
+transmit.registerRoutes()
 
 router.get('/', async () => {
   return {
@@ -35,3 +38,14 @@ router
   .get('/channelList', [ChannelsController, 'channelList'])
   .as('channels.list')
   .use(middleware.auth())
+
+router
+  .post('/removeChannel', [ChannelsController, 'removeChannel'])
+  .as('channels.remove')
+  .use(middleware.auth())
+
+router.post('/broadcast', async ({ request }) => {
+  const { channel, message } = request.only(['channel', 'message'])
+  transmit.broadcast(channel, { message })
+  return { success: true, message: 'Message broadcasted' }
+})

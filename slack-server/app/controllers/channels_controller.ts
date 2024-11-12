@@ -37,4 +37,21 @@ export default class ChannelsController {
       return response.badRequest({ error: error })
     }
   }
+  async removeChannel({ request, response }: HttpContext) {
+    try {
+      console.log('Removing channel:', request.body())
+      const { id, userID, action } = request.body()
+      console.log('Removing channel:', id, 'for user:', userID, 'with action:', action)
+      if (action === 'delete') {
+        await channel.query().where('id', id).delete()
+        await Whitelist.query().where('channel_id', id).delete()
+      } else {
+        await Whitelist.query().where('channel_id', id).where('user_id', userID).delete()
+      }
+      return response.status(204)
+    } catch (error) {
+      console.error('Error during channel removal:', error)
+      return response.badRequest({ error: error })
+    }
+  }
 }

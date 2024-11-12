@@ -59,9 +59,12 @@ const actions: ActionTree<ExampleStateInterface, StateInterface> = {
     }
   },
 
-  async logout({ commit }) {
+  async logout({ commit, getters }) {
     try {
-      await fetch('http://localhost:3333/logout', { method: 'DELETE' });
+      await fetch('http://localhost:3333/logout', {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${getters.token}` },
+      });
       commit('CLEAR_AUTH');
     } catch (error) {
       console.error('Logout failed', error);
@@ -106,10 +109,23 @@ const actions: ActionTree<ExampleStateInterface, StateInterface> = {
   async createChannel({ getters }, { name, admin_id, channel_type }) {
     await fetch('http://localhost:3333/createChannel', {
       method: 'POST',
-      headers: { 
+      headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${getters.token}` },
-      body : JSON.stringify({ name, admin_id, channel_type }), 
+        Authorization: `Bearer ${getters.token}`,
+      },
+      body: JSON.stringify({ name, admin_id, channel_type }),
+    });
+  },
+
+  async removeChannel({ getters }, { id, userID, action }) {
+    console.log('removeChannel', { id, userID, action });
+    await fetch('http://localhost:3333/removeChannel', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${getters.token}`,
+      },
+      body: JSON.stringify({ id, userID, action }),
     });
   },
 
