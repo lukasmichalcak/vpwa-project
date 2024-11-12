@@ -13,6 +13,7 @@
     "build": "quasar build"
   },
   "dependencies": {
+    "@adonisjs/transmit-client": "^1.0.0",
     "@quasar/extras": "^1.16.12",
     "axios": "^1.2.1",
     "core-js": "^3.31.1",

@@ -44,23 +44,24 @@
                   label="Kick"
                   @click="showKickPopup = true"
                 />
-                  <q-btn v-if="userID === channel.adminId"
-                    color="negative"
-                    label="Delete"
-                    @click="deleteChannel(channel.id,'delete')"
-                  />
-                  <q-btn v-else
-                    color="negative"
-                    label="Leave"
-                    @click="deleteChannel(channel.id,'leave')"
-                  />
+                <q-btn
+                  v-if="userID === channel.adminId"
+                  color="negative"
+                  label="Delete"
+                  @click="deleteChannel(channel.id, 'delete')"
+                />
+                <q-btn
+                  v-else
+                  color="negative"
+                  label="Leave"
+                  @click="deleteChannel(channel.id, 'leave')"
+                />
               </q-card-section>
             </q-card>
           </q-popup-proxy>
         </q-btn>
       </q-item-section>
     </q-item>
-
   </q-list>
 
   <q-btn
@@ -142,8 +143,8 @@
 </template>
 
 <script>
-import { mapGetters ,mapActions } from 'vuex';
-
+import { mapGetters, mapActions } from 'vuex';
+import { Transmit } from '@adonisjs/transmit-client';
 
 export default {
   data() {
@@ -157,6 +158,8 @@ export default {
       channelTypes: ['public', 'private'],
       nameError: false,
       nameErrorMessage: '',
+      transmit: null,
+      subscription: null,
     };
   },
 
@@ -170,7 +173,7 @@ export default {
     ...mapActions('module-example', ['removeChannel']),
     async loadChannels() {
       try {
-        this.channels = await this.fetchChannels();
+        await this.fetchChannels();
       } catch (error) {
         console.error('Error fetching channels:', error);
       }
@@ -208,25 +211,35 @@ export default {
       }
     },
 
-
-    async deleteChannel(id,action) {
+    async deleteChannel(id, action) {
       console.log('removeChannel', id);
       await this.removeChannel({ id, userID: this.userID, action });
       console.log('removedChannel', id);
       await this.fetchChannels();
     },
 
-
+    async testTransmit() {
+      if (this.subscription) {
+        console.log('Already subscribed to global channel');
+        await this.subscription.delete();
+        return;
+      }
+      const transmit = new Transmit({
+        baseUrl: 'http://localhost:3333',
+      });
+      const subscription = transmit.subscription('global');
+      await subscription.create();
+      // this.subscription = subscription;
+      subscription.onMessage((data) => {
+        console.log('Received message:', data.message);
+      });
+    },
   },
   created() {
     this.loadChannels();
+    this.testTransmit();
   },
-
-
-  
-
 };
-
 
 // import { mapGetters } from 'vuex';
 
