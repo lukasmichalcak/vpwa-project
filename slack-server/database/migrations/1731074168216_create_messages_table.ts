@@ -6,15 +6,15 @@ export default class extends BaseSchema {
   async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id').primary()
-      table.integer('user_id').notNullable().references('id').inTable('users').onDelete('CASCADE')
+      table.integer('author_id').notNullable().references('id').inTable('users').onDelete('CASCADE')
       table
         .integer('channel_id')
         .notNullable()
         .references('id')
         .inTable('channels')
         .onDelete('CASCADE')
-      table.text('content').notNullable()
-      table.timestamps(true, true)
+      table.text('text').notNullable()
+      table.timestamp('created_at', { useTz: true }).defaultTo(this.now())
     })
   }
 
