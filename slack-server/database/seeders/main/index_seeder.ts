@@ -2,6 +2,7 @@ import { BaseSeeder } from '@adonisjs/lucid/seeders'
 import UserSeeder from '../user_seeder.js'
 import ChannelSeeder from '../channel_seeder.js'
 import WhitelistSeeder from '../whitelist_seeder.js'
+import MessageSeeder from '../message_seeder.js'
 
 export default class IndexSeeder extends BaseSeeder {
   async run() {
@@ -13,5 +14,8 @@ export default class IndexSeeder extends BaseSeeder {
 
     const whitelistSeeder = new WhitelistSeeder(this.client)
     await whitelistSeeder.run()
+
+    const messageSeeder = new MessageSeeder(this.client)
+    await messageSeeder.run()
   }
 }

@@ -9,6 +9,7 @@
 
 const AuthController = () => import('#controllers/auth_controller')
 const ChannelsController = () => import('#controllers/channels_controller')
+const UsersController = () => import('#controllers/users_controller')
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
 import transmit from '@adonisjs/transmit/services/main'
@@ -49,3 +50,8 @@ router.post('/broadcast', async ({ request }) => {
   transmit.broadcast(channel, { message })
   return { success: true, message: 'Message broadcasted' }
 })
+
+router
+  .get('/fetchUserChannels', [UsersController, 'getChannelsWithDetails'])
+  .as('users.fetch')
+  .use(middleware.auth())

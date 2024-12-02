@@ -1,7 +1,7 @@
 import { BaseModel, column, belongsTo } from '@adonisjs/lucid/orm'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
-import User from './user.js'
-import Channel from './channel.js'
+import User from '#models/user'
+import Channel from '#models/channel'
 
 export default class Whitelist extends BaseModel {
   @column({ isPrimary: true })

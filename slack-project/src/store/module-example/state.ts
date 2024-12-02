@@ -20,6 +20,7 @@ export interface ExampleStateInterface {
   token: string | null;
   channels: object[];
   messages: object[];
+  userChannels: object[];
   unfinished_messages: object[];
   loginError: string;
   registrationError: string;
@@ -36,6 +37,7 @@ function state(): ExampleStateInterface {
     token: null,
     channels: [],
     messages: [],
+    userChannels: [],
     unfinished_messages: [],
     loginError: '',
     registrationError: '',

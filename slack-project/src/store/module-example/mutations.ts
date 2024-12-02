@@ -1,5 +1,6 @@
 import { MutationTree } from 'vuex';
 import { ExampleStateInterface } from './state';
+import state from './state';
 
 const mutation: MutationTree<ExampleStateInterface> = {
   SET_USER(state, user) {
@@ -56,6 +57,10 @@ const mutation: MutationTree<ExampleStateInterface> = {
     state.messages.push(message);
   },
 
+  LOAD_USER_CHANNELS(state, userChannels) {
+    state.userChannels.push(userChannels);
+  },
+
   ADD_HISTORIC_MESSAGE(state, message) {
     state.messages.unshift(message);
   },
@@ -89,6 +94,9 @@ const mutation: MutationTree<ExampleStateInterface> = {
   },
   SET_COMMAND_CANCEL(state, commandCancel) {
     state.commandCancel = commandCancel;
+  },
+  RESET_STATE(currentState) {
+    Object.assign(currentState, state());
   },
 };
 

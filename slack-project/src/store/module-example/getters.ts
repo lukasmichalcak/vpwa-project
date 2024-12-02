@@ -47,6 +47,10 @@ const getters: GetterTree<ExampleStateInterface, StateInterface> = {
     return state.messages;
   },
 
+  userChannels(state) {
+    return state.userChannels;
+  },
+
   unfinishedMessages(state) {
     return state.unfinished_messages;
   },

@@ -171,9 +171,11 @@ export default {
     ...mapActions('module-example', ['fetchChannels']),
     ...mapActions('module-example', ['createChannel']),
     ...mapActions('module-example', ['removeChannel']),
+    ...mapActions('module-example', ['fetchUserChannels']),
     async loadChannels() {
       try {
         await this.fetchChannels();
+        await this.fetchUserChannels();
       } catch (error) {
         console.error('Error fetching channels:', error);
       }

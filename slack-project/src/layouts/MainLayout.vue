@@ -92,6 +92,16 @@ export default {
   },
   created() {
     this.me();
+    if (!this.isAuthenticated) {
+      this.$router.push({ name: 'login' });
+    }
+  },
+  watch: {
+    isAuthenticated(newValue) {
+      if (!newValue) {
+        this.$router.push('/login');
+      }
+    },
   },
   computed: {
     ...mapGetters('module-example', ['isAuthenticated']),

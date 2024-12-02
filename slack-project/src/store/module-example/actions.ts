@@ -1,6 +1,7 @@
 import { ActionTree } from 'vuex';
 import { StateInterface } from '../index';
 import { ExampleStateInterface } from './state';
+import { api } from 'src/boot/axios';
 
 const actions: ActionTree<ExampleStateInterface, StateInterface> = {
   async login({ commit }, { username, password }) {
@@ -66,6 +67,7 @@ const actions: ActionTree<ExampleStateInterface, StateInterface> = {
         headers: { Authorization: `Bearer ${getters.token}` },
       });
       commit('CLEAR_AUTH');
+      commit('RESET_STATE');
     } catch (error) {
       console.error('Logout failed', error);
     }
@@ -104,6 +106,21 @@ const actions: ActionTree<ExampleStateInterface, StateInterface> = {
     });
     const channels = await response.json();
     commit('SET_CHANNELS', channels);
+  },
+
+  async fetchUserChannels({ commit, getters }) {
+    try {
+      const response = await api.get('/fetchUserChannels', {
+        headers: {
+          Authorization: `Bearer ${getters.token}`,
+        },
+      });
+
+      commit('LOAD_USER_CHANNELS', response.data);
+    } catch (error) {
+      console.error('Error fetching user channels:', error);
+      throw error;
+    }
   },
 
   async createChannel({ getters }, { name, admin_id, channel_type }) {

@@ -1,6 +1,6 @@
 import { BaseSeeder } from '@adonisjs/lucid/seeders'
-import Channel from '../../app/models/channel.js'
-import User from '../../app/models/user.js'
+import Channel from '#models/channel'
+import User from '#models/user'
 import { faker } from '@faker-js/faker'
 
 export default class ChannelSeeder extends BaseSeeder {
