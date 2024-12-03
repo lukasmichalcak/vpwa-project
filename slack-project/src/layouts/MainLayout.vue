@@ -162,7 +162,6 @@ export default {
       // Listen for messages from the server
       this.socket.on('message', (data) => {
         // Handle incoming messages
-        this.$emit('new-message', data);
         console.log('Received message:', data);
         this.setNewMessage(data);
       });

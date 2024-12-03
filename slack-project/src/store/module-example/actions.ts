@@ -108,15 +108,46 @@ const actions: ActionTree<ExampleStateInterface, StateInterface> = {
     commit('SET_CHANNELS', channels);
   },
 
-  async fetchChannelMessages({ commit, getters }, channelID: number) {
-    const response = await fetch(
-      `http://localhost:3333/channel/${channelID}/messages`,
-      {
-        headers: { Authorization: `Bearer ${getters.token}` },
+  async fetchChannelMessages({ commit, getters }, { channelId, page = 1, limit = 20 }) {
+    try {
+      // Build URL with query parameters
+      const url = new URL(`http://localhost:3333/channels/${channelId}/messages`);
+      url.searchParams.append('page', page.toString());
+      url.searchParams.append('limit', limit.toString());
+  
+      console.log('Fetching messages from:', url.toString());
+  
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${getters.token}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
       }
-    );
-    const messages = await response.json();
-    commit('SET_MESSAGES', messages);
+  
+      const data = await response.json();
+      
+      if (page === 1) {
+        commit('SET_MESSAGES', data.data);
+      } else {
+        commit('PREPEND_MESSAGES', data.data);
+      }
+  
+      return {
+        messages: data.data,
+        meta: data.meta
+      };
+  
+    } catch (error) {
+      console.error('Error fetching messages:', error);
+      throw error;
+    }
   },
 
   async setSelectedChannel({ commit }, channelID: number) {

@@ -2,20 +2,39 @@ import type { HttpContext } from '@adonisjs/core/http'
 import Message from '#models/message'
 
 export default class MessagesController {
-  async getChannelMessages({ request, response }: HttpContext) {
+  async getChannelMessages({ request, response, logger }: HttpContext) {
     try {
       const channelId = request.param('channelId')
       const page = request.input('page', 1)
-      const limit = request.input('limit', 50)
+      const limit = request.input('limit', 20)
+
+      logger.info(`Fetching messages for channel ${channelId}, page ${page}, limit ${limit}`)
+
+      // Validate channelId
+      if (!channelId) {
+        return response.status(400).json({
+          error: 'Channel ID is required',
+        })
+      }
 
       const messages = await Message.query()
         .where('channel_id', channelId)
+        .preload('author')
         .orderBy('created_at', 'desc')
         .paginate(page, limit)
 
-      return response.json(messages)
+      return response.json({
+        data: messages.all(),
+        meta: {
+          total: messages.total,
+          perPage: messages.perPage,
+          currentPage: messages.currentPage,
+          lastPage: messages.lastPage,
+          hasMore: messages.hasMorePages,
+        },
+      })
     } catch (error) {
-      console.error('Error fetching channel messages:', error)
+      logger.error('Error fetching messages:', error)
       return response.status(500).json({
         error: 'Failed to fetch messages',
         details: error.message,
