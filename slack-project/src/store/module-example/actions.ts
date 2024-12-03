@@ -108,6 +108,17 @@ const actions: ActionTree<ExampleStateInterface, StateInterface> = {
     commit('SET_CHANNELS', channels);
   },
 
+  async fetchChannelMessages({ commit, getters }, channelID: number) {
+    const response = await fetch(
+      `http://localhost:3333/channel/${channelID}/messages`,
+      {
+        headers: { Authorization: `Bearer ${getters.token}` },
+      }
+    );
+    const messages = await response.json();
+    commit('SET_MESSAGES', messages);
+  },
+
   async setSelectedChannel({ commit }, channelID: number) {
     commit('SET_SELECTED_CHANNEL', channelID);
   },

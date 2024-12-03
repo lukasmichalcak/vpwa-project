@@ -90,8 +90,6 @@ const getters: GetterTree<ExampleStateInterface, StateInterface> = {
   },
 
   channels(state) {
-    console.log('channels:', state.channels);
-    console.log('zbehol som');
     return state.channels;
   },
 

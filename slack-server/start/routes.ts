@@ -10,6 +10,7 @@
 const AuthController = () => import('#controllers/auth_controller')
 const ChannelsController = () => import('#controllers/channels_controller')
 const UsersController = () => import('#controllers/users_controller')
+const MessagesController = () => import('#controllers/messages_controller')
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
 import transmit from '@adonisjs/transmit/services/main'
@@ -55,3 +56,11 @@ router
   .get('/fetchUserChannels', [UsersController, 'getChannelsWithDetails'])
   .as('users.fetch')
   .use(middleware.auth())
+
+router
+  .get('/channel/:channelId/messages', [MessagesController, 'getChannelMessages'])
+  .as('messages.list')
+
+router
+  .post('/channel/:channelId/messages', [MessagesController, 'storeMessage'])
+  .as('messages.store')

@@ -79,6 +79,9 @@ export default {
       verifierLogo,
       items: [{}, {}, {}, {}, {}, {}, {}],
       isInitialLoad: true,
+      currentPage: 1,	
+      isLoading: false,
+      hasMoreMessages: true,
     };
   },
 
@@ -87,12 +90,19 @@ export default {
     ...mapGetters('module-example', ['unfinishedMessages']),
     ...mapGetters('module-example', ['newMessage']),
     ...mapGetters('module-example', ['username']),
+    ...mapGetters('module-example', ['selectedChannel']),
   },
 
   methods: {
     ...mapActions('module-example', ['addMessage']),
     ...mapActions('module-example', ['addHistoricMessage']),
     ...mapActions('module-example', ['addUnfinishedMessage']),
+    ...mapActions('module-example', ['fetchChannelMessages']),
+    
+
+
+
+
 
     getMessageBgColor(message) {
       if (message.text && message.text.some((t) => t.includes('@Kevin '))) {
@@ -144,7 +154,7 @@ export default {
     newMessage(newMessage) {
       if (newMessage) {
         this.addMessage({
-          name: newMessage.name,
+          name: newMessage.name === this.username ? 'me' : newMessage.name,
           avatar: this.verifierLogo,
           text: [newMessage.message],
           sent: newMessage.name === this.username,
