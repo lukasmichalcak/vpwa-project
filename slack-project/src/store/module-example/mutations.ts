@@ -13,6 +13,14 @@ const mutation: MutationTree<ExampleStateInterface> = {
   SET_CHANNELS(state, channels) {
     state.channels = channels;
   },
+  SET_SELECTED_CHANNEL(state, selectedChannel: number) {
+    state.selectedChannel = selectedChannel;
+  },
+
+  SET_NEW_MESSAGE(state, newMessage) {
+    state.newMessage = newMessage;
+  },
+  
   CLEAR_AUTH(state) {
     state.user = null;
     state.token = null;

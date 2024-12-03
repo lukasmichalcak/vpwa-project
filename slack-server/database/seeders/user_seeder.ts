@@ -13,6 +13,15 @@ export default class UserSeeder extends BaseSeeder {
       state: null,
     })
 
+    await User.create({
+      firstName: 'Sucaaan',
+      lastName: 'Harmonickar',
+      username: 'ctibor',
+      email: 'ctibor@gmail.com',
+      password: 'heslo123456789',
+      state: null,
+    })
+
     const usedEmails = new Set<string>()
     const usedUsernames = new Set<string>()
 

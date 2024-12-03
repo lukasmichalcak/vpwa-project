@@ -85,6 +85,8 @@ export default {
   computed: {
     ...mapGetters('module-example', ['messages']),
     ...mapGetters('module-example', ['unfinishedMessages']),
+    ...mapGetters('module-example', ['newMessage']),
+    ...mapGetters('module-example', ['username']),
   },
 
   methods: {
@@ -134,6 +136,19 @@ export default {
         }
       } else {
         done();
+      }
+    },
+  },
+
+  watch: {
+    newMessage(newMessage) {
+      if (newMessage) {
+        this.addMessage({
+          name: newMessage.name,
+          avatar: this.verifierLogo,
+          text: [newMessage.message],
+          sent: newMessage.name === this.username,
+        });
       }
     },
   },

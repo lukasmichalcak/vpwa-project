@@ -7,7 +7,7 @@
       v-for="channel in channels"
       :key="channel.id"
       clickable
-      @click="selectChannel(channel.id)"
+      @click="selectNewChannel(channel.id)"
       :class="{ 'selected-channel': selectedChannel === channel.id }"
     >
       <q-item-section avatar>
@@ -144,7 +144,6 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import { Transmit } from '@adonisjs/transmit-client';
 
 export default {
   data() {
@@ -172,17 +171,26 @@ export default {
     ...mapActions('module-example', ['createChannel']),
     ...mapActions('module-example', ['removeChannel']),
     ...mapActions('module-example', ['fetchUserChannels']),
+    ...mapActions('module-example', ['setSelectedChannel']),
     async loadChannels() {
       try {
         await this.fetchChannels();
+        if (this.channels.length > 0) {
+          this.selectedChannel = this.channels[0].id;
+          await this.setSelectedChannel(this.selectedChannel);
+        }
         await this.fetchUserChannels();
+
+
+        this.joinChannels();
       } catch (error) {
         console.error('Error fetching channels:', error);
       }
     },
 
-    selectChannel(id) {
+    selectNewChannel(id) {
       this.selectedChannel = id;
+      this.setSelectedChannel(this.selectedChannel);
     },
 
     async createNewServer() {
@@ -200,6 +208,8 @@ export default {
         });
 
         await this.fetchChannels();
+
+        this.joinChannels();
 
         this.newChannelName = '';
         this.newChannelType = 'public';
@@ -219,194 +229,18 @@ export default {
       console.log('removedChannel', id);
       await this.fetchChannels();
     },
-
-    async testTransmit() {
-      if (this.subscription) {
-        console.log('Already subscribed to global channel');
-        await this.subscription.delete();
-        return;
-      }
-      const transmit = new Transmit({
-        baseUrl: 'http://localhost:3333',
-      });
-      const subscription = transmit.subscription('global');
-      await subscription.create();
-      // this.subscription = subscription;
-      subscription.onMessage((data) => {
-        console.log('Received message:', data.message);
+    joinChannels() {
+      this.channels.forEach((channel) => {
+        this.$emit('join-channel', channel.id);
       });
     },
   },
   created() {
     this.loadChannels();
-    this.testTransmit();
+
   },
 };
 
-// import { mapGetters } from 'vuex';
-
-// export default {
-//   data() {
-//     return {
-//       channels: [],
-//       hiddenChannels: [],
-//       selectedChannel: null,
-//       showCreateChannelDialog: false,
-//       showInvitePopup: false,
-//       showKickPopup: false,
-//       newChannelName: '',
-//       newChannelType: 'Public',
-//       channelTypes: ['Public', 'Private'],
-//       nameError: false,
-//       nameErrorMessage: '',
-//     };
-//   },
-//   computed: {
-//     ...mapGetters('module-example', ['commandJoin']),
-//     ...mapGetters('module-example', ['commandQuit']),
-//     ...mapGetters('module-example', ['commandCancel']),
-//     ...mapGetters('module-example', ['genericUsers']),
-//   },
-//   watch: {
-//     commandJoin(newVal) {
-//       if (newVal && newVal.command && newVal.command.channelName) {
-//         const channelName = newVal.command.channelName;
-
-//         const hiddenChannelIndex = this.hiddenChannels.findIndex(
-//           (channel) =>
-//             channel.label === channelName && channel.caption === 'Public'
-//         );
-//         if (hiddenChannelIndex !== -1) {
-//           console.log(
-//             'Hidden channel found:',
-//             this.hiddenChannels[hiddenChannelIndex]
-//           );
-//           const hiddenChannel = this.hiddenChannels.splice(
-//             hiddenChannelIndex,
-//             1
-//           )[0];
-//           this.channels.unshift(hiddenChannel);
-//           return;
-//         }
-
-//         const isNameUsed =
-//           this.channels.some((channel) => channel.label === channelName) ||
-//           this.hiddenChannels.some((channel) => channel.label === channelName);
-
-//         if (isNameUsed) {
-//           this.nameError = true;
-//           this.nameErrorMessage = 'Channel name is already used';
-//           return;
-//         }
-
-//         this.channels.unshift({
-//           id: this.channels.length + 1,
-//           icon: newVal.command.isPrivate ? 'lock' : 'public',
-//           label: newVal.command.channelName,
-//           caption: newVal.command.isPrivate ? 'Private' : 'Public',
-//           buttonLabel: 'Delete Channel',
-//           isnew: true,
-//         });
-//         console.log('Updated channels:', this.channels);
-//       }
-//     },
-//     commandQuit(newVal) {
-//       if (newVal) {
-//         const channelName = newVal.command;
-//         const channelIndex = this.channels.findIndex(
-//           (channel) => channel.label === channelName
-//         );
-//         if (channelIndex !== -1) {
-//           console.log('Channel found:', this.channels[channelIndex]);
-//           const channel = this.channels.splice(channelIndex, 1)[0];
-//           this.hiddenChannels.unshift(channel);
-//           return;
-//         }
-//       }
-//     },
-//     commandCancel(newVal) {
-//       if (newVal) {
-//         const channelName = newVal.command;
-//         const channelIndex = this.channels.findIndex(
-//           (channel) => channel.label === channelName
-//         );
-//         if (channelIndex !== -1) {
-//           console.log('Channel found:', this.channels[channelIndex]);
-//           const channel = this.channels.splice(channelIndex, 1)[0];
-//           this.hiddenChannels.unshift(channel);
-//           return;
-//         }
-//       }
-//     },
-//   },
-//   created() {
-//     for (let i = 1; i <= 100; i++) {
-//       this.channels.push({
-//         id: i,
-//         icon: i % 2 === 0 ? 'lock' : 'public',
-//         label: `Channel${i}`,
-//         caption: i % 2 === 0 ? 'Private' : 'Public',
-//         buttonLabel: i % 3 === 0 ? 'Delete Channel' : 'Leave Channel',
-//         isnew: false,
-//         newMessage: i % 5 === 0 ? true : false,
-//       });
-//     }
-//     for (let k = 1; k <= 10; k++) {
-//       this.hiddenChannels.push({
-//         id: k + 1000,
-//         icon: k % 2 === 0 ? 'lock' : 'public',
-//         label: `Hidden Channel${k}`,
-//         caption: k % 2 === 0 ? 'Private' : 'Public',
-//         buttonLabel: 'Leave Channel',
-//         isnew: true,
-//         newMessage: k % 3 === 0 ? true : false,
-//       });
-//     }
-//   },
-//   methods: {
-//     selectChannel(id) {
-//       this.selectedChannel = id;
-//     },
-//     removeChannel(id) {
-//       this.channels = this.channels.filter((channel) => channel.id !== id);
-//       if (this.selectedChannel === id) {
-//         this.selectedChannel = null;
-//       }
-//     },
-//     createNewServer() {
-//       if (this.newChannelName.trim() === '') {
-//         this.nameError = true;
-//         this.nameErrorMessage = 'Channel name is required';
-//         return;
-//       }
-
-//       const isNameUsed = this.channels.some(
-//         (channel) => channel.label === this.newChannelName
-//       );
-//       if (isNameUsed) {
-//         this.nameError = true;
-//         this.nameErrorMessage = 'Channel name is already used';
-//         return;
-//       }
-
-//       const newChannel = {
-//         id: this.channels.length + 1,
-//         icon: this.newChannelType === 'Public' ? 'public' : 'lock',
-//         label: this.newChannelName,
-//         caption: this.newChannelType,
-//         buttonLabel: 'Zrušiť kanál',
-//         isnew: true,
-//       };
-
-//       this.channels.unshift(newChannel);
-//       this.newChannelName = '';
-//       this.newChannelType = 'Public';
-//       this.nameError = false;
-//       this.nameErrorMessage = '';
-//       this.showCreateChannelDialog = false;
-//     },
-//   },
-// };
 </script>
 
 <style scoped>
