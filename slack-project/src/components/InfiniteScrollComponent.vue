@@ -310,6 +310,13 @@ export default {
       sent: true,
     });
 
+    this.addMessage({
+      name: 'me',
+      avatar: this.verifierLogo,
+      text: ['PWA SU BASEEEEEED'],
+      sent: true,
+    });
+
     this.addUnfinishedMessage({
       name: 'Jane',
       avatar: 'https://cdn.quasar.dev/img/avatar5.jpg',
