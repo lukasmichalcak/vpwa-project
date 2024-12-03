@@ -108,6 +108,10 @@ const actions: ActionTree<ExampleStateInterface, StateInterface> = {
     commit('SET_CHANNELS', channels);
   },
 
+  async setSelectedChannel({ commit }, channelID: number) {
+    commit('SET_SELECTED_CHANNEL', channelID);
+  },
+
   async fetchUserChannels({ commit, getters }) {
     try {
       const response = await api.get('/fetchUserChannels', {
@@ -144,6 +148,10 @@ const actions: ActionTree<ExampleStateInterface, StateInterface> = {
       },
       body: JSON.stringify({ id, userID, action }),
     });
+  },
+
+  async setNewMessage({ commit }, message) {
+    commit('SET_NEW_MESSAGE', message);
   },
 
   generateUsers({ commit, getters }) {
