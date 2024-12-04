@@ -344,7 +344,7 @@ export default {
 <template>
   <div class="q-pa-md">
     <div ref="scrollContainer">
-      <q-infinite-scroll @load="onLoad" reverse>
+      <q-infinite-scroll @load="onLoad" :initial-index="1">
         <template v-slot:loading>
           <div class="row justify-center q-my-md">
             <q-spinner color="primary" name="dots" size="40px" />
@@ -410,7 +410,6 @@ export default {
           limit: 20
         });
 
-        // Check if we have more messages to load
         this.hasMore = response.meta.hasMore;
         this.page = page;
       } catch (error) {
@@ -441,7 +440,7 @@ export default {
     },
 
     getMessageBgColor(message) {
-      // if (message.content.includes('@Kevin')) return 'warning';
+      if (message.text.includes('@Kevin')) return 'warning';
       return message.userId === this.currentUserId ? 'info' : 'primary';
     }
   },
