@@ -3,7 +3,7 @@ import Message from '#models/message'
 import User from '#models/user'
 
 export default class MessagesController {
-  async getChannelMessages({ request, response, logger }: HttpContext) {
+  async getChannelMessages({ request, response }: HttpContext) {
     try {
       const channelId = request.param('channelId')
 
@@ -14,18 +14,9 @@ export default class MessagesController {
           query.select('id', 'username') // Adjust fields as needed
         })
 
-      return response.json({
-        data: messages.all(),
-        meta: {
-          total: messages.total,
-          perPage: messages.perPage,
-          currentPage: messages.currentPage,
-          lastPage: messages.lastPage,
-          hasMore: messages.hasMorePages,
-        },
-      })
+      return response.json(messages)
     } catch (error) {
-      logger.error('Error fetching messages:', error)
+      console.error('Error fetching channel messages:', error)
       return response.status(500).json({
         error: 'Failed to fetch messages',
         details: error.message,

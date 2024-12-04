@@ -1,4 +1,3 @@
-<!--
 <template>
   <div class="q-pa-md">
     <div ref="scrollContainer">
@@ -80,6 +79,9 @@ export default {
       verifierLogo,
       items: [{}, {}, {}, {}, {}, {}, {}],
       isInitialLoad: true,
+      currentPage: 1,	
+      isLoading: false,
+      hasMoreMessages: true,
     };
   },
 
@@ -88,12 +90,19 @@ export default {
     ...mapGetters('module-example', ['unfinishedMessages']),
     ...mapGetters('module-example', ['newMessage']),
     ...mapGetters('module-example', ['username']),
+    ...mapGetters('module-example', ['selectedChannel']),
   },
 
   methods: {
     ...mapActions('module-example', ['addMessage']),
     ...mapActions('module-example', ['addHistoricMessage']),
     ...mapActions('module-example', ['addUnfinishedMessage']),
+    ...mapActions('module-example', ['fetchChannelMessages']),
+    
+
+
+
+
 
     getMessageBgColor(message) {
       // if (message.text && message.text.some((t) => t.includes('@Kevin '))) {
@@ -342,134 +351,5 @@ export default {
 .scroll-container {
   width: 100%;
   max-width: 100%;
-}
-</style>
-
--->
-
-<template>
-  <div class="q-pa-md">
-    <div ref="scrollContainer">
-      <q-infinite-scroll @load="onLoad" :initial-index="1">
-        <template v-slot:loading>
-          <div class="row justify-center q-my-md">
-            <q-spinner color="primary" name="dots" size="40px" />
-          </div>
-        </template>
-
-        <div
-          v-for="message in messages"
-          :key="message.id"
-          :class="message.sent ? 'row justify-end' : 'row justify-start'"
-          class="caption q-py-sm"
-        >
-          <div
-            :class="message.sent ? 'self-end' : 'self-start'"
-            style="max-width: 75%"
-          >
-            <q-chat-message
-              :name="message.author.username"
-              :avatar="message.author.avatar"
-              :text="[message.text]"
-              :sent="message.author.username === username"
-              :bg-color="getMessageBgColor(message)"
-              text-color="white"
-            />
-          </div>
-        </div>
-      </q-infinite-scroll>
-    </div>
-  </div>
-</template>
-
-<script>
-import { mapGetters, mapActions } from 'vuex';
-
-export default {
-  data() {
-    return {
-      page: 1,
-      loading: false,
-      hasMore: true
-    };
-  },
-
-  computed: {
-    ...mapGetters('module-example', [
-      'messages',
-      'selectedChannel',
-      'username',
-    ])
-  },
-
-  methods: {
-    ...mapActions('module-example', ['fetchChannelMessages']),
-
-    async loadMessages(page = 1) {
-      if (this.loading || !this.hasMore) return;
-      
-      this.loading = true;
-      try {
-        const response = await this.fetchChannelMessages({
-          channelId: this.selectedChannel,
-          page,
-          limit: 20
-        });
-
-        this.hasMore = response.meta.hasMore;
-        this.page = page;
-      } catch (error) {
-        console.error('Error loading messages:', error);
-      } finally {
-        this.loading = false;
-      }
-    },
-
-    async onLoad(index, done) {
-      if (!this.hasMore || this.loading) {
-        done();
-        return;
-      }
-
-      const scrollContainer = this.$refs.scrollContainer;
-      const previousScrollHeight = scrollContainer.scrollHeight;
-      const previousScrollTop = scrollContainer.scrollTop;
-
-      await this.loadMessages(this.page + 1);
-
-      this.$nextTick(() => {
-        const newScrollHeight = scrollContainer.scrollHeight;
-        const heightDifference = newScrollHeight - previousScrollHeight;
-        scrollContainer.scrollTop = previousScrollTop + heightDifference;
-        done();
-      });
-    },
-
-    getMessageBgColor(message) {
-      if (message.text.includes('@Kevin')) return 'warning';
-      return message.userId === this.currentUserId ? 'info' : 'primary';
-    }
-  },
-
-  async created() {
-    await this.loadMessages();
-  },
-
-  watch: {
-    async selectedChannel() {
-      this.page = 1;
-      this.hasMore = true;
-      await this.loadMessages();
-    }
-  }
-};
-</script>
-
-<style scoped>
-.scroll-container {
-  width: 100%;
-  max-width: 100%;
-  height: calc(100vh - 120px);
-  overflow-y: auto;
 }
 </style>

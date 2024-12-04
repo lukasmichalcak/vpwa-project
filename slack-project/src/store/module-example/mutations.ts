@@ -14,6 +14,10 @@ const mutation: MutationTree<ExampleStateInterface> = {
     state.channels = channels;
   },
 
+  SET_MESSAGES(state, messages) {
+    state.messages = messages;
+  },
+
   SET_SELECTED_CHANNEL(state, selectedChannel: number) {
     state.selectedChannel = selectedChannel;
   },
@@ -62,25 +66,17 @@ const mutation: MutationTree<ExampleStateInterface> = {
     state.user = null;
   },
 
-  SET_MESSAGES(state, messages) {
-    state.messages = messages;
+  ADD_MESSAGE(state, message) {
+    state.messages.push(message);
   },
-
-  PREPEND_MESSAGES(state, messages) {
-    state.messages = [...messages, ...state.messages];
-  },
-
-  // ADD_MESSAGE(state, message) {
-  //   state.messages.push(message);
-  // },
 
   LOAD_USER_CHANNELS(state, userChannels) {
     state.userChannels.push(userChannels);
   },
 
-  // ADD_HISTORIC_MESSAGE(state, message) {
-  //   state.messages.unshift(message);
-  // },
+  ADD_HISTORIC_MESSAGE(state, message) {
+    state.messages.unshift(message);
+  },
 
   ADD_UNFINISHED_MESSAGE(state, unfinished_message) {
     state.unfinished_messages.push(unfinished_message);
