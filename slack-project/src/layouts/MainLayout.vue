@@ -24,8 +24,8 @@
         persistent
         class="left-drawer"
       >
-        <KeepAlive><ChannelListComponent 
-        @join-channel="joinChannel"
+        <KeepAlive
+          ><ChannelListComponent @join-channel="joinChannel"
         /></KeepAlive>
       </q-drawer>
 
@@ -108,7 +108,6 @@ export default {
         this.$router.push('/login');
       }
     },
-    
 
     // selectedChannel(newSelectedChannel) {
     //   console.log('Selected channel changed:', newSelectedChannel);
@@ -157,12 +156,10 @@ export default {
       // Initialize the socket connection
       this.socket = io('http://localhost:3333');
 
-
-
       // Listen for messages from the server
       this.socket.on('message', (data) => {
         // Handle incoming messages
-        this.$emit('new-message', data);
+        // this.$emit('new-message', data);
         console.log('Received message:', data);
         this.setNewMessage(data);
       });
@@ -177,7 +174,7 @@ export default {
     //   this.currentChannel = newChannel;
     // },
     sendMessage(data) {
-      this.socket.emit('message',data);
+      this.socket.emit('message', data);
     },
     joinChannel(channel) {
       this.socket.emit('join', channel);

@@ -146,6 +146,7 @@
 import { mapGetters, mapActions } from 'vuex';
 
 export default {
+  emits: ['join-channel'],
   data() {
     return {
       selectedChannel: null,
@@ -180,7 +181,6 @@ export default {
           await this.setSelectedChannel(this.selectedChannel);
         }
         await this.fetchUserChannels();
-
 
         this.joinChannels();
       } catch (error) {
@@ -237,10 +237,8 @@ export default {
   },
   created() {
     this.loadChannels();
-
   },
 };
-
 </script>
 
 <style scoped>
