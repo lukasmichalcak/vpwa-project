@@ -15,7 +15,7 @@ export default class MessageSeeder extends BaseSeeder {
     const messages = []
 
     for (const entry of whitelistEntries) {
-      const numberOfMessages = faker.number.int({ min: 1, max: 10 })
+      const numberOfMessages = faker.number.int({ min: 1, max: 50 })
 
       for (let i = 0; i < numberOfMessages; i++) {
         messages.push({

@@ -58,9 +58,10 @@ router
   .use(middleware.auth())
 
 router
-  .get('/channel/:channelId/messages', [MessagesController, 'getChannelMessages'])
+  .get('/channels/:channelId/messages', [MessagesController, 'getChannelMessages'])
   .as('messages.list')
+  .use(middleware.auth())
 
 router
-  .post('/channel/:channelId/messages', [MessagesController, 'storeMessage'])
+  .post('/channels/:channelId/messages', [MessagesController, 'storeMessage'])
   .as('messages.store')
