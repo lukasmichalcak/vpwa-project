@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 
 export default {
   data() {
@@ -37,12 +37,22 @@ export default {
 
 
   methods: {
+    ...mapActions('module-example', ['storeMessage']),
     handleEnter() {
       if (this.text.trim() === '') return;
       this.$emit('send-message', {
         channelId: this.selectedChannel,
-        message: this.text,
-        name: this.username,
+        text: this.text,
+        author: {
+          username: this.username,
+          id: this.userID,
+        },
+      });
+
+      this.storeMessage({
+        channelId: this.selectedChannel,
+        text: this.text,
+        username: this.username,
       });
 
       this.text = '';
