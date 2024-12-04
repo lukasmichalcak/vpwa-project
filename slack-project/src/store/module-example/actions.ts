@@ -131,6 +131,32 @@ const actions: ActionTree<ExampleStateInterface, StateInterface> = {
         },
       });
 
+      type ChannelData = {
+        name: string;
+        adminId: number;
+        channelType: string;
+        users: { id: number; username: string }[];
+        messages: MessageData[];
+      };
+
+      type MessageData = {
+        id: number;
+        text: string;
+        author: { id: number; name: string };
+        createdAt: string | null;
+      };
+
+      const userChannels: Record<number, ChannelData> = response.data;
+      Object.values(userChannels).forEach((channel) => {
+        console.log(`Channel: ${channel.name}`);
+        channel.messages = transformMessages(channel.messages);
+      });
+
+      // Flatten all messages across all channels
+      const allMessages: MessageData[] = Object.values(userChannels).flatMap(
+        (channel) => channel.messages
+      );
+      console.log(allMessages);
       commit('LOAD_USER_CHANNELS', response.data);
     } catch (error) {
       console.error('Error fetching user channels:', error);
@@ -238,3 +264,24 @@ const actions: ActionTree<ExampleStateInterface, StateInterface> = {
 };
 
 export default actions;
+function transformMessages(
+  messages: {
+    id: number;
+    text: string;
+    author: { id: number; name: string };
+    createdAt: string | null;
+  }[]
+): {
+  id: number;
+  text: string;
+  author: { id: number; name: string };
+  createdAt: string | null;
+}[] {
+  return messages.map((message) => ({
+    ...message,
+    text: message.text.trim(),
+    createdAt: message.createdAt
+      ? new Date(message.createdAt).toISOString()
+      : null,
+  }));
+}
