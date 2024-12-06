@@ -188,8 +188,6 @@ export default {
   },
 
   created() {
-    this.fetchChannelMessages(this.selectedChannel);
-    
     this.$nextTick(() => {
       this.$emit('static-messages-loaded');
       this.isInitialLoad = false;

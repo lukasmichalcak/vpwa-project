@@ -102,6 +102,9 @@ export default {
     if (!this.isAuthenticated) {
       this.$router.push({ name: 'login' });
     }
+    if ('Notification' in window && Notification.permission !== 'granted') {
+      Notification.requestPermission();
+    }
   },
   watch: {
     isAuthenticated(newValue) {
@@ -128,6 +131,7 @@ export default {
     ...mapGetters('module-example', ['isAuthenticated']),
     ...mapGetters('module-example', ['selectedChannel']),
     ...mapGetters('module-example', ['typingUsers']),
+    ...mapGetters('module-example', ['username']),
   },
 
   methods: {
@@ -161,6 +165,15 @@ export default {
       this.socket.on('message', (data) => {
         console.log('Received message:', data);
         this.setNewMessage(data);
+        if (
+          data.author.username !== this.username &&
+          Notification.permission === 'granted'
+        ) {
+          new Notification(`New message from ${data.author.username}`, {
+            body: data.text,
+            icon: this.verifierLogo,
+          });
+        }
       });
 
       this.socket.on('typing', (data) => {
