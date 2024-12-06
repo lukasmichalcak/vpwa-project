@@ -106,9 +106,9 @@ export default {
 
 
     getMessageBgColor(message) {
-      // if (message.text && message.text.some((t) => t.includes('@Kevin '))) {
-      //   return 'warning';
-      // }
+      if (message.text[0] && message.text[0].includes(`@${this.username}`) || message.text && message.text.includes(`@${this.username}`)) {
+        return 'warning';
+      }
       if (message.author.username === this.username) {
         return 'info';
       }
@@ -184,7 +184,6 @@ export default {
           }
         }
       }
-      console.log('unfinishedMessages',this.unfinishedMessages);
     },
   },
 
