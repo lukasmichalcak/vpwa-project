@@ -55,6 +55,10 @@ const getters: GetterTree<ExampleStateInterface, StateInterface> = {
     return state.selectedChannel;
   },
 
+  typingMessage(state) {
+    return state.typingMessage;
+  },
+
   newMessage(state) {
     return state.newMessage;
   },

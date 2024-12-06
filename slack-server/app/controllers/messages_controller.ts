@@ -1,17 +1,18 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import Message from '#models/message'
+import User from '#models/user'
 
 export default class MessagesController {
   async getChannelMessages({ request, response }: HttpContext) {
     try {
       const channelId = request.param('channelId')
-      const page = request.input('page', 1)
-      const limit = request.input('limit', 50)
 
       const messages = await Message.query()
         .where('channel_id', channelId)
-        .orderBy('created_at', 'desc')
-        .paginate(page, limit)
+        .orderBy('created_at', 'asc')
+        .preload('author', (query) => {
+          query.select('id', 'username') // Adjust fields as needed
+        })
 
       return response.json(messages)
     } catch (error) {
@@ -25,9 +26,14 @@ export default class MessagesController {
 
   async storeMessage({ request, response }: HttpContext) {
     try {
-      const data = request.only(['channelId', 'authorId', 'text'])
+      const { channelId, text, username } = request.only(['channelId', 'text', 'username'])
 
-      const message = await Message.create(data)
+      const user = await User.findByOrFail('username', username)
+      const message = await Message.create({
+        channelId,
+        authorId: user.id,
+        text,
+      })
 
       return response.status(201).json(message)
     } catch (error) {

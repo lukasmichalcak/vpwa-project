@@ -115,8 +115,29 @@ const actions: ActionTree<ExampleStateInterface, StateInterface> = {
         headers: { Authorization: `Bearer ${getters.token}` },
       }
     );
-    const messages = await response.json();
+    const responsedata = await response.json();
+
+    const messages = responsedata.data || responsedata;
     commit('SET_MESSAGES', messages);
+  },
+
+  async storeMessage({ getters }, { channelId, text, username }) {
+    console.log('storeMessage', { channelId, text, username });
+    const response = await fetch(`http://localhost:3333/channel/${channelId}/messages`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${getters.token}`,
+      },
+      body: JSON.stringify({ channelId, text, username }),
+    });
+    const message = await response.json();
+    console.log('storeMessage', message);
+    // commit('ADD_MESSAGE', message);
+  },
+
+  async typingMessage({ commit }, data) {
+    commit('SET_TYPING_MESSAGE', data);
   },
 
   async setSelectedChannel({ commit }, channelID: number) {
@@ -148,15 +169,15 @@ const actions: ActionTree<ExampleStateInterface, StateInterface> = {
 
       const userChannels: Record<number, ChannelData> = response.data;
       Object.values(userChannels).forEach((channel) => {
-        console.log(`Channel: ${channel.name}`);
+        // console.log(`Channel: ${channel.name}`);
         channel.messages = transformMessages(channel.messages);
       });
 
       // Flatten all messages across all channels
-      const allMessages: MessageData[] = Object.values(userChannels).flatMap(
-        (channel) => channel.messages
-      );
-      console.log(allMessages);
+      // const allMessages: MessageData[] = Object.values(userChannels).flatMap(
+      //   (channel) => channel.messages
+      // );
+      // console.log(allMessages);
       commit('LOAD_USER_CHANNELS', response.data);
     } catch (error) {
       console.error('Error fetching user channels:', error);
