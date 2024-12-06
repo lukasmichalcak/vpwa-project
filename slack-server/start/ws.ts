@@ -12,23 +12,24 @@ app.ready(() => {
   io.on('connection', (socket) => {
     console.log('A new connection', socket.id)
 
-    // Join a channel
     socket.on('join', (channelId) => {
       socket.join(`channel-${channelId}`)
       console.log(`User ${socket.id} joined channel ${channelId}`)
     })
 
-    // Leave a channel
     socket.on('leave', (channelId) => {
       socket.leave(`channel-${channelId}`)
       console.log(`User ${socket.id} left channel ${channelId}`)
     })
 
-    // Handle incoming messages
     socket.on('message', (data) => {
-      // Emit the message to all clients in the channel
       io.to(`channel-${data.channelId}`).emit('message', data)
       console.log(`Message sent to channel ${data.channelId}`)
+    })
+
+    socket.on('typing', (data) => {
+      socket.to(`channel-${data.channelId}`).emit('typing', data)
+      console.log(`Typing event sent to channel ${data.channelId}`)
     })
 
     socket.on('disconnect', () => {

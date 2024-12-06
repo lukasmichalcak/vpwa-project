@@ -70,6 +70,10 @@ const mutation: MutationTree<ExampleStateInterface> = {
     state.messages.push(message);
   },
 
+  SET_TYPING_MESSAGE(state, message) {
+    state.typingMessage = message;
+  },
+
   LOAD_USER_CHANNELS(state, userChannels) {
     state.userChannels.push(userChannels);
   },

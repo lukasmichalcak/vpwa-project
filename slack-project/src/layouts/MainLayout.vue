@@ -60,6 +60,7 @@
           @createNewChannel="handleCreateNewChannel"
           @message-sent="scrollToBottom"
           @send-message="sendMessage"
+          @typing="typing"
         />
       </q-footer>
     </q-layout>
@@ -126,11 +127,13 @@ export default {
   computed: {
     ...mapGetters('module-example', ['isAuthenticated']),
     ...mapGetters('module-example', ['selectedChannel']),
+    ...mapGetters('module-example', ['typingUsers']),
   },
 
   methods: {
     ...mapActions('module-example', ['me']),
     ...mapActions('module-example', ['setNewMessage']),
+    ...mapActions('module-example', ['typingMessage']),
     toggleLeftDrawer() {
       this.leftDrawerOpen = !this.leftDrawerOpen;
     },
@@ -153,28 +156,22 @@ export default {
     },
 
     setupSocket() {
-      // Initialize the socket connection
       this.socket = io('http://localhost:3333');
 
-      // Listen for messages from the server
       this.socket.on('message', (data) => {
-        // Handle incoming messages
-        // this.$emit('new-message', data);
         console.log('Received message:', data);
         this.setNewMessage(data);
       });
+
+      this.socket.on('typing', (data) => {
+        this.typingMessage(data);
+      });
     },
-    // changeChannel(newChannel) {
-    //   // Leave the previous channel
-    //   if (this.currentChannel) {
-    //     this.socket.emit('leave', this.currentChannel);
-    //   }
-    //   // Join the new channel
-    //   this.socket.emit('join', newChannel);
-    //   this.currentChannel = newChannel;
-    // },
     sendMessage(data) {
       this.socket.emit('message', data);
+    },
+    typing(data) {
+      this.socket.emit('typing', data);
     },
     joinChannel(channel) {
       this.socket.emit('join', channel);

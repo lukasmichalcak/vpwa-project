@@ -7,6 +7,7 @@
     label-color="white"
     input-class="custom-input-text"
     @keyup.enter="handleEnter"
+    @update:model-value="debouncedTyping"
   >
     <template v-slot:append>
       <q-btn flat
@@ -20,6 +21,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+import { debounce } from 'lodash';
 
 export default {
   data() {
@@ -49,6 +51,8 @@ export default {
         },
       });
 
+      this.typing('');
+
       this.storeMessage({
         channelId: this.selectedChannel,
         text: this.text,
@@ -57,6 +61,16 @@ export default {
 
       this.text = '';
     },
+    typing(value) {
+      this.$emit('typing', {
+        channelId: this.selectedChannel,
+        text: value,
+        username: this.username,
+      });
+    },
+    debouncedTyping: debounce(function (value) {
+      this.typing(value);
+    }, 200),
   },
 };
 </script>

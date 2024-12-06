@@ -58,6 +58,7 @@
     "@adonisjs/lucid": "^21.3.0",
     "@adonisjs/transmit": "^2.0.2",
     "@vinejs/vine": "^2.1.0",
+    "lodash": "^4.17.21",
     "luxon": "^3.5.0",
     "pg": "^8.13.1",
     "phc-argon2": "^1.1.4",
