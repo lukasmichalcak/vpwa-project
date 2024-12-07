@@ -20,6 +20,7 @@ import { mapActions, mapGetters } from 'vuex';
 import { debounce } from 'lodash';
 
 export default {
+  emits: ['join-command', 'typing', 'send-message'],
   data() {
     return {
       text: '',
@@ -40,6 +41,16 @@ export default {
       // -------------------------------------- handle commands
       if (this.text.trim() === '/list') {
         this.$emit('toggleRightDrawer');
+      } else if (this.text.startsWith('/join')) {
+        const parts = this.text.split(' ');
+        let isPrivate = false;
+        if (parts[parts.length - 1] === '[private]') {
+          isPrivate = true;
+          parts.pop();
+        }
+        const channelName = parts.slice(1).join(' ');
+        const channelType = isPrivate ? 'private' : 'public';
+        this.$emit('join-command', channelName, channelType);
       }
       // -------------------------------------- handle commands
       else {

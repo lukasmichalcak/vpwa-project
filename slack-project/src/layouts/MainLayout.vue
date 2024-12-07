@@ -25,7 +25,9 @@
         class="left-drawer"
       >
         <KeepAlive
-          ><ChannelListComponent @join-channel="joinChannel"
+          ><ChannelListComponent
+            :setSelectedChannelEvent="setSelectedChannelEvent"
+            @join-channel="joinChannel"
         /></KeepAlive>
       </q-drawer>
 
@@ -61,6 +63,7 @@
           @message-sent="scrollToBottom"
           @send-message="sendMessage"
           @typing="typing"
+          @join-command="handleJoinCommand"
         />
       </q-footer>
     </q-layout>
@@ -95,6 +98,7 @@ export default {
       newChannel: null,
       socket: null,
       currentChannel: null,
+      setSelectedChannelEvent: { type: '', payload: null },
     };
   },
   created() {
@@ -138,6 +142,8 @@ export default {
     ...mapActions('module-example', ['me']),
     ...mapActions('module-example', ['setNewMessage']),
     ...mapActions('module-example', ['typingMessage']),
+    ...mapActions('module-example', ['fetchChannelUsers']),
+    ...mapActions('module-example', ['fetchChannels']),
     toggleLeftDrawer() {
       this.leftDrawerOpen = !this.leftDrawerOpen;
     },
@@ -179,7 +185,25 @@ export default {
       this.socket.on('typing', (data) => {
         this.typingMessage(data);
       });
+      this.socket.on('user-joined-channel', async (data) => {
+        const { channel } = data;
+        if (channel.id == this.selectedChannel) {
+          // needs to add this new member
+          await this.fetchChannelUsers(channel.id);
+        } else {
+          this.fetchChannels();
+        }
+        this.triggerSetSelectedChannelEvent(channel.id);
+      });
     },
+
+    triggerSetSelectedChannelEvent(channelId) {
+      this.setSelectedChannelEvent = {
+        type: 'setSelectedChannelUpdate',
+        payload: { key: channelId },
+      };
+    },
+
     sendMessage(data) {
       this.socket.emit('message', data);
     },
@@ -191,6 +215,10 @@ export default {
     },
     leaveChannel(channel) {
       this.socket.emit('leave', channel);
+    },
+    handleJoinCommand(channelName, channelType) {
+      const username = this.username;
+      this.socket.emit('join-command', { channelName, channelType, username });
     },
   },
 };
