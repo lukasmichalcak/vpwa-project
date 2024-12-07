@@ -13,4 +13,16 @@ export default class UsersController {
       return response.badRequest({ error: error.message })
     }
   }
+  async updateUserState({ auth, request, response }: HttpContext) {
+    try {
+      const user = auth.user!
+      const { state } = request.only(['state'])
+      user.state = state
+      await user.save()
+      return { state }
+    } catch (error) {
+      console.error('Error updating user state:', error)
+      return response.badRequest({ error: error.message })
+    }
+  }
 }
