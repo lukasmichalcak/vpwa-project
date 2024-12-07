@@ -7,6 +7,7 @@ export interface ExampleStateInterface {
     username: string;
     email: string;
     password: string;
+    state: string;
   };
   genericUsers:
     | null

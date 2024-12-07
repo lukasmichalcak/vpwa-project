@@ -5,6 +5,7 @@ import state from './state';
 const mutation: MutationTree<ExampleStateInterface> = {
   SET_USER(state, user) {
     state.user = user;
+    console.log('user', user);
   },
   SET_TOKEN(state, token) {
     state.token = token;
@@ -63,6 +64,12 @@ const mutation: MutationTree<ExampleStateInterface> = {
   SET_PASSWORD(state, password) {
     if (state.user) {
       state.user.password = password;
+    }
+  },
+
+  SET_STATE(state, State) {
+    if (state.user) {
+      state.user.state = State;
     }
   },
 

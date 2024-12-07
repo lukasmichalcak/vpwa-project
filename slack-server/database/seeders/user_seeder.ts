@@ -10,7 +10,7 @@ export default class UserSeeder extends BaseSeeder {
       username: 'Kevin_da_G',
       email: 'kevin.smith@gmail.com',
       password: 'secret_password_123',
-      state: null,
+      state: 'offline',
     })
 
     await User.create({
@@ -19,7 +19,16 @@ export default class UserSeeder extends BaseSeeder {
       username: 'ctibor',
       email: 'ctibor@gmail.com',
       password: 'heslo123456789',
-      state: null,
+      state: 'offline',
+    })
+
+    await User.create({
+      firstName: 'pavol',
+      lastName: 'protein',
+      username: 'protein',
+      email: 'protein@gmail.com',
+      password: 'heslo123456789',
+      state: 'offline',
     })
 
     const usedEmails = new Set<string>()
@@ -45,7 +54,7 @@ export default class UserSeeder extends BaseSeeder {
         firstName: faker.person.firstName(),
         lastName: faker.person.lastName(),
         password: faker.internet.password({ length: 15 }),
-        state: null,
+        state: ['online', 'offline', 'dnd'][Math.floor(Math.random() * 3)],
       }
     }
 

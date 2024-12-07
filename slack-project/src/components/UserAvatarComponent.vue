@@ -41,16 +41,22 @@
 import { mapGetters, mapActions } from 'vuex';
 
 export default {
-  data() {
-    return {
-      status: 'online',
-    };
-  },
   computed: {
     ...mapGetters('module-example', ['username']),
+    ...mapGetters('module-example', ['state']),
+    status: {
+      get() {
+        return this.state;
+      },
+      set(value) {
+        console.log('status:', value);
+        this.updateState(value);
+      },
+    },
   },
   methods: {
     ...mapActions('module-example', ['logout']),
+    ...mapActions('module-example', ['updateState']),
     async logoutUser() {
       try {
         await this.logout();
@@ -59,6 +65,10 @@ export default {
         console.error('Logout failed:', error);
       }
     },
+  },
+  created() {
+    console.log('state:', this.state);
+    console.log('username:', this.username);
   },
 };
 </script>
