@@ -1,6 +1,6 @@
 <template>
   <q-input
-  rounded
+    rounded
     filled
     v-model="text"
     label="Type"
@@ -10,11 +10,7 @@
     @update:model-value="debouncedTyping"
   >
     <template v-slot:append>
-      <q-btn flat
-        round
-        color="white"
-        icon="send"
-        @click="handleEnter" />
+      <q-btn flat round color="white" icon="send" @click="handleEnter" />
     </template>
   </q-input>
 </template>
@@ -37,27 +33,33 @@ export default {
     ...mapGetters('module-example', ['username']),
   },
 
-
   methods: {
     ...mapActions('module-example', ['storeMessage']),
     handleEnter() {
       if (this.text.trim() === '') return;
-      this.$emit('send-message', {
-        channelId: this.selectedChannel,
-        text: this.text,
-        author: {
+      // -------------------------------------- handle commands
+      if (this.text.trim() === '/list') {
+        this.$emit('toggleRightDrawer');
+      }
+      // -------------------------------------- handle commands
+      else {
+        this.$emit('send-message', {
+          channelId: this.selectedChannel,
+          text: this.text,
+          author: {
+            username: this.username,
+            id: this.userID,
+          },
+        });
+
+        this.storeMessage({
+          channelId: this.selectedChannel,
+          text: this.text,
           username: this.username,
-          id: this.userID,
-        },
-      });
+        });
+      }
 
       this.typing('');
-
-      this.storeMessage({
-        channelId: this.selectedChannel,
-        text: this.text,
-        username: this.username,
-      });
 
       this.text = '';
     },
@@ -77,5 +79,6 @@ export default {
 
 <style lang="scss">
 .custom-input-text {
- color: white; }
+  color: white;
+}
 </style>
