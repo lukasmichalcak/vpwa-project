@@ -104,19 +104,19 @@ const actions: ActionTree<ExampleStateInterface, StateInterface> = {
     try {
       const response = await fetch('http://localhost:3333/state', {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${getters.token}`,
         },
         body: JSON.stringify({ state: newState }),
       });
-      
+
       const data = await response.json();
-      
+
       if (!response.ok) {
         throw new Error(data.error || 'Failed to update state');
       }
-  
+
       commit('SET_STATE', data.state);
     } catch (error) {
       console.error('Error updating state:', error);
