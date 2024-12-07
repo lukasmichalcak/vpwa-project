@@ -43,6 +43,12 @@ const getters: GetterTree<ExampleStateInterface, StateInterface> = {
     }
   },
 
+  state(state) {
+    if (state.user) {
+      return state.user.state;
+    }
+  },
+
   messages(state) {
     return state.messages;
   },

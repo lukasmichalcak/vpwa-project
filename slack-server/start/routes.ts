@@ -58,6 +58,11 @@ router
   .use(middleware.auth())
 
 router
+  .post('/state', [UsersController, 'updateUserState'])
+  .as('users.updateState')
+  .use(middleware.auth())
+
+router
   .get('/channel/:channelId/messages', [MessagesController, 'getChannelMessages'])
   .as('messages.list')
 
