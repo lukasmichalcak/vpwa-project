@@ -69,3 +69,5 @@ router
 router
   .post('/channel/:channelId/messages', [MessagesController, 'storeMessage'])
   .as('messages.store')
+
+router.get('/channel/:channelId/users', [UsersController, 'getChannelUsers']).as('users.list')

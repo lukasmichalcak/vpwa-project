@@ -23,6 +23,7 @@ export interface ExampleStateInterface {
   selectedChannel: number | null;
   newMessage: object[] | null;
   messages: object[];
+  users: object[];
   typingMessage: object[];
   userChannels: object[];
   unfinished_messages: object[];
@@ -43,6 +44,7 @@ function state(): ExampleStateInterface {
     selectedChannel: null,
     newMessage: [],
     messages: [],
+    users: [],
     typingMessage: [],
     userChannels: [],
     unfinished_messages: [],

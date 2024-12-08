@@ -11,16 +11,22 @@
         <div
           v-for="(message, index) in messages"
           :key="index"
-          :class="message.author.username === username ? 'row justify-end' : 'row justify-start'"
+          :class="
+            message.author.username === username
+              ? 'row justify-end'
+              : 'row justify-start'
+          "
           class="caption q-py-sm"
         >
           <div
-            :class="message.author.username === username ? 'self-end' : 'self-start'"
+            :class="
+              message.author.username === username ? 'self-end' : 'self-start'
+            "
             style="max-width: 75%"
           >
             <q-chat-message
               :name="message.author.username"
-              :avatar=verifierLogo
+              :avatar="verifierLogo"
               :text="[message.text]"
               :sent="message.author.username === username"
               :bg-color="getMessageBgColor(message)"
@@ -79,7 +85,7 @@ export default {
       verifierLogo,
       items: [{}, {}, {}, {}, {}, {}, {}],
       isInitialLoad: true,
-      currentPage: 1,	
+      currentPage: 1,
       isLoading: false,
       hasMoreMessages: true,
       unfinishedMessages: [],
@@ -99,14 +105,12 @@ export default {
     ...mapActions('module-example', ['addHistoricMessage']),
     ...mapActions('module-example', ['addUnfinishedMessage']),
     ...mapActions('module-example', ['fetchChannelMessages']),
-    
-
-
-
-
 
     getMessageBgColor(message) {
-      if (message.text[0] && message.text[0].includes(`@${this.username}`) || message.text && message.text.includes(`@${this.username}`)) {
+      if (
+        (message.text[0] && message.text[0].includes(`@${this.username}`)) ||
+        (message.text && message.text.includes(`@${this.username}`))
+      ) {
         return 'warning';
       }
       if (message.author.username === this.username) {
@@ -158,29 +162,34 @@ export default {
     },
 
     typingMessage(newTypingMessage) {
-      if (newTypingMessage && newTypingMessage.channelId === this.selectedChannel) {
+      if (
+        newTypingMessage &&
+        newTypingMessage.channelId === this.selectedChannel
+      ) {
         if (newTypingMessage.text === '') {
           this.unfinishedMessages = this.unfinishedMessages.filter(
-            message => message.author.username !== newTypingMessage.username
+            (message) => message.author.username !== newTypingMessage.username
           );
         } else {
           const existingIndex = this.unfinishedMessages.findIndex(
-            message => message.author.username === newTypingMessage.username
+            (message) => message.author.username === newTypingMessage.username
           );
-          
+
           const typingMessage = {
             author: {
-            username: newTypingMessage.username,
+              username: newTypingMessage.username,
             },
             avatar: this.verifierLogo,
             text: [newTypingMessage.text],
-            sent: newTypingMessage.username === this.username
+            sent: newTypingMessage.username === this.username,
           };
 
           if (existingIndex === -1) {
             this.unfinishedMessages.push(typingMessage);
           } else {
-            this.unfinishedMessages[existingIndex].text = [newTypingMessage.text];
+            this.unfinishedMessages[existingIndex].text = [
+              newTypingMessage.text,
+            ];
           }
         }
       }

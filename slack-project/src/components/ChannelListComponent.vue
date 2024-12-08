@@ -147,6 +147,7 @@ import { mapGetters, mapActions } from 'vuex';
 
 export default {
   emits: ['join-channel'],
+  props: ['setSelectedChannelEvent'],
   data() {
     return {
       selectedChannel: null,
@@ -233,6 +234,16 @@ export default {
       this.channels.forEach((channel) => {
         this.$emit('join-channel', channel.id);
       });
+    },
+  },
+
+  watch: {
+    setSelectedChannelEvent: {
+      handler(newVal) {
+        if (newVal && newVal.payload && newVal.payload.key) {
+          this.selectNewChannel(newVal.payload.key);
+        }
+      },
     },
   },
   created() {
