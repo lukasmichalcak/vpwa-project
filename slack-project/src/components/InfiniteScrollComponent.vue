@@ -1,15 +1,8 @@
 <template>
   <div class="q-pa-md">
-    <div ref="scrollContainer">
-      <q-infinite-scroll @load="onLoad" reverse>
-        <template v-slot:loading>
-          <div class="row justify-center q-my-md">
-            <q-spinner color="primary" name="dots" size="40px" />
-          </div>
-        </template>
-
-        <div
-          v-for="(message, index) in messages"
+    <div ref="scrollContainer" class="scroll-container" @scroll="handleScroll">
+      <div
+          v-for="(message, index) in messages.slice(0,limit).reverse()"
           :key="index"
           :class="
             message.author.username === username
@@ -69,7 +62,7 @@
             </q-popup-proxy>
           </div>
         </div>
-      </q-infinite-scroll>
+        <div ref="scrollBottom"></div>
     </div>
   </div>
 </template>
@@ -89,6 +82,7 @@ export default {
       isLoading: false,
       hasMoreMessages: true,
       unfinishedMessages: [],
+      limit: 20,
     };
   },
 
@@ -105,6 +99,21 @@ export default {
     ...mapActions('module-example', ['addHistoricMessage']),
     ...mapActions('module-example', ['addUnfinishedMessage']),
     ...mapActions('module-example', ['fetchChannelMessages']),
+    
+
+    handleScroll(event) {
+      const container = event.target;
+      if (container.scrollTop === 0) {
+        const previousHeight = container.scrollHeight;
+        this.limit += 20;
+        
+        this.$nextTick(() => {
+          const newHeight = container.scrollHeight;
+          container.scrollTop = newHeight - previousHeight;
+        });
+      }
+    },
+
 
     getMessageBgColor(message) {
       if (
@@ -119,28 +128,6 @@ export default {
       return 'primary';
     },
 
-    onLoad(index, done) {
-      if (!this.isInitialLoad) {
-        const scrollContainer = document.querySelector('.center-content');
-        const previousScrollHeight = scrollContainer.scrollHeight;
-        const previousScrollTop = scrollContainer.scrollTop;
-
-        if (previousScrollTop <= 100) {
-          setTimeout(() => {
-            this.$nextTick(() => {
-              const newScrollHeight = scrollContainer.scrollHeight;
-              const heightDifference = newScrollHeight - previousScrollHeight;
-              scrollContainer.scrollTop = previousScrollTop + heightDifference;
-              done();
-            });
-          }, 1500);
-        } else {
-          done();
-        }
-      } else {
-        done();
-      }
-    },
   },
 
   watch: {
@@ -154,9 +141,13 @@ export default {
           text: [newMessage.text],
           sent: newMessage.author.username === this.username,
         });
+        this.limit += 1
+        this.$refs.scrollBottom?.scrollIntoView()
       }
     },
     selectedChannel(newChannel) {
+      this.limit = 20;
+      this.$refs.scrollBottom?.scrollIntoView()
       this.fetchChannelMessages(newChannel);
       this.unfinishedMessages = [];
     },
@@ -183,7 +174,7 @@ export default {
             text: [newTypingMessage.text],
             sent: newTypingMessage.username === this.username,
           };
-
+          this.$refs.scrollBottom?.scrollIntoView()
           if (existingIndex === -1) {
             this.unfinishedMessages.push(typingMessage);
           } else {
@@ -196,18 +187,15 @@ export default {
     },
   },
 
-  created() {
-    this.$nextTick(() => {
-      this.$emit('static-messages-loaded');
-      this.isInitialLoad = false;
-    });
-  },
+  
 };
 </script>
 
 <style scoped>
 .scroll-container {
-  width: 100%;
+  width: auto;
   max-width: 100%;
+  height: calc(100vh - 150px);
+  overflow-y: auto;
 }
 </style>
