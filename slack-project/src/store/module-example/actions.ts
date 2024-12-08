@@ -179,6 +179,10 @@ const actions: ActionTree<ExampleStateInterface, StateInterface> = {
     commit('SET_TYPING_MESSAGE', data);
   },
 
+  async setNotificationSetting({ commit }, data) {
+    commit('SET_NOTIFICATION_SETTING', data);
+  },
+
   async userStatusChange({ commit }, data) {
     commit('SET_USER_STATUS_CHANGE', data);
   },

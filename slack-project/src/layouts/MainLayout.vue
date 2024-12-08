@@ -142,6 +142,7 @@ export default {
     ...mapGetters('module-example', ['typingUsers']),
     ...mapGetters('module-example', ['username']),
     ...mapGetters('module-example', ['state']),
+    ...mapGetters('module-example', ['notificationSetting']),
   },
 
   methods: {
@@ -188,7 +189,17 @@ export default {
         this.setNewMessage(data);
         if (
           data.author.username !== this.username &&
-          Notification.permission === 'granted' && !AppVisibility.appVisible && this.state === 'online'
+          Notification.permission === 'granted' && !AppVisibility.appVisible && this.state === 'online' &&
+          this.notificationSetting === 'all'
+        ) {
+          new Notification(`New message from ${data.author.username}`, {
+            body: data.text.length > 30 ? data.text.substring(0, 30) + '...': data.text,
+            icon: this.verifierLogo,
+          });
+        } else if (
+          data.author.username !== this.username &&
+          Notification.permission === 'granted' && !AppVisibility.appVisible && this.state === 'online' &&
+          this.notificationSetting === 'Tag-only' && data.text.includes(`@${this.username}`)
         ) {
           new Notification(`New message from ${data.author.username}`, {
             body: data.text.length > 30 ? data.text.substring(0, 30) + '...': data.text,
