@@ -48,13 +48,13 @@
                   v-if="userID === channel.adminId"
                   color="negative"
                   label="Delete"
-                  @click="deleteChannel(channel.id, 'delete')"
+                  @click="deleteChannel"
                 />
                 <q-btn
                   v-else
                   color="negative"
                   label="Leave"
-                  @click="deleteChannel(channel.id, 'leave')"
+                  @click="deleteChannel"
                 />
               </q-card-section>
             </q-card>
@@ -92,24 +92,11 @@
         <div class="text-h6">Kick Users</div>
       </q-card-section>
       <q-card-section>
-        <q-list bordered>
-          <q-item v-for="user in genericUsers" :key="user.username">
-            <q-item-section>
-              <q-item-label>{{ user.username }}</q-item-label>
-              <q-item-label caption>Votes to Kick: 0/3</q-item-label>
-            </q-item-section>
-            <q-item-section side>
-              <q-btn
-                color="negative"
-                label="Kick"
-                @click="kickUser(user.username)"
-              />
-            </q-item-section>
-          </q-item>
-        </q-list>
+        <q-input v-model="kickUsername" label="Enter Username" filled />
       </q-card-section>
       <q-card-actions align="right">
-        <q-btn flat label="Close" @click="showKickPopup = false" />
+        <q-btn flat label="Cancel" @click="showKickPopup = false" />
+        <q-btn color="primary" label="Kick" @click="kickUser" />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -146,7 +133,13 @@
 import { mapGetters, mapActions } from 'vuex';
 
 export default {
-  emits: ['join-channel'],
+  emits: [
+    'cancel-command',
+    'join-command',
+    'join-channel',
+    'invite-command',
+    'kick-command',
+  ],
   props: ['setSelectedChannelEvent'],
   data() {
     return {
@@ -161,6 +154,8 @@ export default {
       nameErrorMessage: '',
       transmit: null,
       subscription: null,
+      inviteUsername: null,
+      kickUsername: null,
     };
   },
 
@@ -200,36 +195,25 @@ export default {
         this.nameErrorMessage = 'Channel name is required';
         return;
       }
-
-      try {
-        await this.createChannel({
-          name: this.newChannelName,
-          admin_id: this.userID,
-          channel_type: this.newChannelType,
-        });
-
-        await this.fetchChannels();
-
-        this.joinChannels();
-
-        this.newChannelName = '';
-        this.newChannelType = 'public';
-        this.nameError = false;
-        this.nameErrorMessage = '';
-        this.showCreateChannelDialog = false;
-      } catch (error) {
-        console.error('Error creating new channel:', error);
-        this.nameError = true;
-        this.nameErrorMessage = 'Failed to create channel';
-      }
+      const channelName = this.newChannelName;
+      const channelType = this.newChannelType;
+      this.$emit('join-command', channelName, channelType);
     },
 
-    async deleteChannel(id, action) {
-      console.log('removeChannel', id);
-      await this.removeChannel({ id, userID: this.userID, action });
-      console.log('removedChannel', id);
-      await this.fetchChannels();
+    async inviteUser() {
+      const invitee = this.inviteUsername;
+      this.$emit('invite-command', invitee);
     },
+
+    async kickUser() {
+      const kickee = this.kickUsername;
+      this.$emit('kick-command', kickee);
+    },
+
+    async deleteChannel() {
+      this.$emit('cancel-command');
+    },
+
     joinChannels() {
       this.channels.forEach((channel) => {
         this.$emit('join-channel', channel.id);
