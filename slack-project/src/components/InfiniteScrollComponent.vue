@@ -197,9 +197,5 @@ export default {
   max-width: 100%;
   height: calc(100vh - 150px);
   overflow-y: auto;
-
-  @media (max-width: 1006px) {
-    width: 100vw;
-  }
 }
 </style>
