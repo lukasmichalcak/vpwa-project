@@ -15,6 +15,7 @@ export default class extends BaseSchema {
         .inTable('users')
         .onDelete('CASCADE')
       table.string('channel_type').notNullable()
+      table.timestamp('last_message_at').nullable()
     })
   }
 

@@ -45,3 +45,8 @@ export const middleware = router.named({
   guest: () => import('#middleware/guest_middleware'),
   auth: () => import('#middleware/auth_middleware'),
 })
+
+import ChannelCleanupService from '#services/cleanup_service'
+
+// Start cleanup service when server starts
+ChannelCleanupService.startCleanupInterval()

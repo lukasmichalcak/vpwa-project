@@ -85,6 +85,10 @@ const mutation: MutationTree<ExampleStateInterface> = {
     state.typingMessage = message;
   },
 
+  SET_NOTIFICATION_SETTING(state, notificationSetting) {
+    state.notificationSetting = notificationSetting;
+  },
+
   SET_USER_STATUS_CHANGE(state, userStatusChange) {
     state.userStatusChange = userStatusChange;
   },

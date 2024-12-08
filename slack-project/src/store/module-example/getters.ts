@@ -69,6 +69,10 @@ const getters: GetterTree<ExampleStateInterface, StateInterface> = {
     return state.typingMessage;
   },
 
+  notificationSetting(state) {
+    return state.notificationSetting;
+  },
+
   userStatusChange(state) {
     return state.userStatusChange;
   },
