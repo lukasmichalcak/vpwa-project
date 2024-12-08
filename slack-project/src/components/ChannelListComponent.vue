@@ -48,13 +48,13 @@
                   v-if="userID === channel.adminId"
                   color="negative"
                   label="Delete"
-                  @click="deleteChannel(channel.id, 'delete')"
+                  @click="deleteChannel"
                 />
                 <q-btn
                   v-else
                   color="negative"
                   label="Leave"
-                  @click="deleteChannel(channel.id, 'leave')"
+                  @click="deleteChannel"
                 />
               </q-card-section>
             </q-card>
@@ -146,7 +146,7 @@
 import { mapGetters, mapActions } from 'vuex';
 
 export default {
-  emits: ['join-channel'],
+  emits: ['cancel-command'],
   props: ['setSelectedChannelEvent'],
   data() {
     return {
@@ -224,16 +224,8 @@ export default {
       }
     },
 
-    async deleteChannel(id, action) {
-      console.log('removeChannel', id);
-      await this.removeChannel({ id, userID: this.userID, action });
-      console.log('removedChannel', id);
-      await this.fetchChannels();
-    },
-    joinChannels() {
-      this.channels.forEach((channel) => {
-        this.$emit('join-channel', channel.id);
-      });
+    async deleteChannel() {
+      this.$emit('cancel-command');
     },
   },
 

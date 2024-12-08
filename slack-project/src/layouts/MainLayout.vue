@@ -27,7 +27,7 @@
         <KeepAlive
           ><ChannelListComponent
             :setSelectedChannelEvent="setSelectedChannelEvent"
-            @join-channel="joinChannel"
+            @cancel-command="handleCancelCommand"
         /></KeepAlive>
       </q-drawer>
 
@@ -286,7 +286,6 @@ export default {
       const username = this.username;
       this.socket.emit('join-command', { channelName, channelType, username });
     },
-    //---------------------------------- TODO
     handleQuitCommand() {
       const username = this.username;
       const channelId = this.selectedChannel;
@@ -297,6 +296,7 @@ export default {
       const channelId = this.selectedChannel;
       this.socket.emit('cancel-command', { channelId, username });
     },
+    //---------------------------------- TODO
     handleInviteCommand(channelName, channelType) {
       const username = this.username;
       this.socket.emit('invite-command', {
