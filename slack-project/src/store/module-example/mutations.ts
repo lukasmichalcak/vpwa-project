@@ -78,7 +78,7 @@ const mutation: MutationTree<ExampleStateInterface> = {
   },
 
   ADD_MESSAGE(state, message) {
-    state.messages.push(message);
+    state.messages.unshift(message);
   },
 
   SET_TYPING_MESSAGE(state, message) {
