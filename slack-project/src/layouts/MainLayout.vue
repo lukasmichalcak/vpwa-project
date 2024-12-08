@@ -12,9 +12,7 @@
             SKRUPULUS
           </q-toolbar-title>
           <NotificationsComponent />
-          <UserAvatarComponent 
-          @userStatusChanged="userStatusChanged"
-          />
+          <UserAvatarComponent @userStatusChanged="userStatusChanged" />
         </q-toolbar>
       </q-header>
 
@@ -66,6 +64,11 @@
           @send-message="sendMessage"
           @typing="typing"
           @join-command="handleJoinCommand"
+          @quit-command="handleQuitCommand"
+          @cancel-command="handleCancelCommand"
+          @invite-command="handleInviteCommand"
+          @revoke-command="handleRevokeCommand"
+          @kick-command="handleKickCommand"
         />
       </q-footer>
     </q-layout>
@@ -142,6 +145,8 @@ export default {
     ...mapGetters('module-example', ['typingUsers']),
     ...mapGetters('module-example', ['username']),
     ...mapGetters('module-example', ['state']),
+    ...mapGetters('module-example', ['channels']),
+    ...mapGetters('module-example', ['userID']),
   },
 
   methods: {
@@ -188,10 +193,15 @@ export default {
         this.setNewMessage(data);
         if (
           data.author.username !== this.username &&
-          Notification.permission === 'granted' && !AppVisibility.appVisible && this.state === 'online'
+          Notification.permission === 'granted' &&
+          !AppVisibility.appVisible &&
+          this.state === 'online'
         ) {
           new Notification(`New message from ${data.author.username}`, {
-            body: data.text.length > 30 ? data.text.substring(0, 30) + '...': data.text,
+            body:
+              data.text.length > 30
+                ? data.text.substring(0, 30) + '...'
+                : data.text,
             icon: this.verifierLogo,
           });
         }
@@ -206,14 +216,50 @@ export default {
         this.userStatusChange(data);
       });
       this.socket.on('user-joined-channel', async (data) => {
-        const { channel } = data;
+        const { channel, user } = data;
         if (channel.id == this.selectedChannel) {
           // needs to add this new member
           await this.fetchChannelUsers(channel.id);
         } else {
-          this.fetchChannels();
+          if (this.userID == user.id) {
+            await this.fetchChannels();
+            this.triggerSetSelectedChannelEvent(channel.id);
+          }
         }
-        this.triggerSetSelectedChannelEvent(channel.id);
+      });
+
+      this.socket.on('channel-deleted', async () => {
+        await this.fetchChannels();
+        if (this.channels && this.channels.length > 0) {
+          this.triggerSetSelectedChannelEvent(this.channels[0].id);
+        } else {
+          //TODO handle empty channel list
+        }
+      });
+
+      this.socket.on('user-left-channel', async (data) => {
+        const { channel, user } = data;
+        if (channel.id == this.selectedChannel) {
+          if (this.userID == user.id) {
+            await this.fetchChannels();
+            if (this.channels && this.channels.length > 0) {
+              this.triggerSetSelectedChannelEvent(this.channels[0].id);
+            } else {
+              //TODO handle empty channel list
+            }
+          } else {
+            await this.fetchChannelUsers(channel.id);
+          }
+        } else {
+          if (this.userID == user.id) {
+            await this.fetchChannels();
+            if (this.channels && this.channels.length > 0) {
+              this.triggerSetSelectedChannelEvent(this.channels[0].id);
+            } else {
+              //TODO handle empty channel list
+            }
+          }
+        }
       });
     },
 
@@ -240,6 +286,29 @@ export default {
       const username = this.username;
       this.socket.emit('join-command', { channelName, channelType, username });
     },
+    //---------------------------------- TODO
+    handleQuitCommand(channelName) {
+      const username = this.username;
+      this.socket.emit('quit-command', { channelName, username });
+    },
+    handleCancelCommand() {
+      const username = this.username;
+      const channelId = this.selectedChannel;
+      this.socket.emit('cancel-command', { channelId, username });
+    },
+    handleInviteCommand(channelName, channelType) {
+      const username = this.username;
+      this.socket.emit('join-command', { channelName, channelType, username });
+    },
+    handleRevokeCommand(channelName, channelType) {
+      const username = this.username;
+      this.socket.emit('join-command', { channelName, channelType, username });
+    },
+    handleKickCommand(channelName, channelType) {
+      const username = this.username;
+      this.socket.emit('join-command', { channelName, channelType, username });
+    },
+    //---------------------------------- TODO
     userStatusChanged(status) {
       console.log('User status changed:', status);
       this.socket.emit('userStatus', status);

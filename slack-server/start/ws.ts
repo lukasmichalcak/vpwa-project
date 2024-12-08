@@ -61,7 +61,6 @@ app.ready(() => {
       const { channelName, channelType, username } = data
       const commandService = new CommandsService()
       const result = await commandService.join(channelName, channelType, username)
-      // socket.to(`channel-${data.channelId}`).emit('join-command-result', result)
       if (result.success) {
         const channel = result.channel
 
@@ -79,6 +78,30 @@ app.ready(() => {
         }
       } else {
         console.log('Failed to join user')
+      }
+    })
+
+    socket.on('cancel-command', async (data) => {
+      const { channelId, username } = data
+      const commandService = new CommandsService()
+      const result = await commandService.cancel(channelId, username)
+      if (result.success) {
+        const channel = result.channel
+
+        if (channel) {
+          if (result.user.id === channel.adminId) {
+            io.to(`channel-${channelId}`).emit('channel-deleted')
+          } else {
+            io.to(`channel-${channelId}`).emit('user-left-channel', {
+              channel: result.channel,
+              user: result.user,
+            })
+          }
+        } else {
+          console.log('Failed to locate the /cancel-ed channel')
+        }
+      } else {
+        console.log('Failed to /cancel user')
       }
     })
 

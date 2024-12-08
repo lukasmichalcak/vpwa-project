@@ -1,4 +1,5 @@
 import Blacklist from '#models/blacklist'
+import Whitelist from '#models/whitelist'
 import User from '#models/user'
 import Channel from '#models/channel'
 
@@ -57,6 +58,66 @@ export default class CommandsService {
         message: `Successfully joined channel '${channelName}'.`,
         user: user,
         channel: channel,
+      }
+    } catch (error) {
+      console.error('Error joining channel:', error)
+      return { success: false, message: 'An error occurred while processing your request.' }
+    }
+  }
+
+  public async cancel(channelId: number, username: string) {
+    try {
+      console.log(channelId, username)
+      const user = await User.findByOrFail('username', username)
+      console.log('user: ', user)
+
+      let channel = await Channel.query().where('id', channelId).first()
+      console.log('channel: ', channel)
+
+      if (!channel) {
+        return {
+          success: false,
+          message: `ChannelId '${channelId}' incorrect - either bad type or non-existent id.`,
+        }
+      } else {
+        if (!user) {
+          return {
+            success: false,
+            message: `User '${user}' non-existent.`,
+          }
+        } else {
+          if (user.id === channel.adminId) {
+            await Channel.query().where('id', channelId).delete()
+            await Whitelist.query().where('channel_id', channelId).delete()
+            await Blacklist.query().where('channel_id', channelId).delete()
+            return {
+              success: true,
+              message: `Admin ${user.id} deleted channel ${channelId}.`,
+              user: user,
+              channel: channel,
+            }
+          } else {
+            const whitelistEntry = await Whitelist.query()
+              .where('channel_id', channelId)
+              .andWhere('user_id', user.id)
+              .first()
+
+            if (whitelistEntry) {
+              await whitelistEntry.delete()
+              return {
+                success: true,
+                message: `User ${user.username} left channel '${channelId}'.`,
+                user: user,
+                channel: channel,
+              }
+            } else {
+              return {
+                success: false,
+                message: `User ${user.username} is not a member of channel '${channelId}'.`,
+              }
+            }
+          }
+        }
       }
     } catch (error) {
       console.error('Error joining channel:', error)
