@@ -28,6 +28,7 @@
           ><ChannelListComponent
             :setSelectedChannelEvent="setSelectedChannelEvent"
             @cancel-command="handleCancelCommand"
+            @join-command="handleJoinCommand"
         /></KeepAlive>
       </q-drawer>
 

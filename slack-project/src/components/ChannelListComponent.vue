@@ -146,7 +146,7 @@
 import { mapGetters, mapActions } from 'vuex';
 
 export default {
-  emits: ['cancel-command'],
+  emits: ['cancel-command', 'join-command'],
   props: ['setSelectedChannelEvent'],
   data() {
     return {
@@ -200,28 +200,9 @@ export default {
         this.nameErrorMessage = 'Channel name is required';
         return;
       }
-
-      try {
-        await this.createChannel({
-          name: this.newChannelName,
-          admin_id: this.userID,
-          channel_type: this.newChannelType,
-        });
-
-        await this.fetchChannels();
-
-        this.joinChannels();
-
-        this.newChannelName = '';
-        this.newChannelType = 'public';
-        this.nameError = false;
-        this.nameErrorMessage = '';
-        this.showCreateChannelDialog = false;
-      } catch (error) {
-        console.error('Error creating new channel:', error);
-        this.nameError = true;
-        this.nameErrorMessage = 'Failed to create channel';
-      }
+      const channelName = this.newChannelName;
+      const channelType = this.newChannelType;
+      this.$emit('join-command', channelName, channelType);
     },
 
     async deleteChannel() {
