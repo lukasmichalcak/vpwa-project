@@ -143,6 +143,7 @@ export default {
     ...mapGetters('module-example', ['username']),
     ...mapGetters('module-example', ['state']),
     ...mapGetters('module-example', ['notificationSetting']),
+    ...mapGetters('module-example', ['channels']),
   },
 
   methods: {
@@ -153,6 +154,7 @@ export default {
     ...mapActions('module-example', ['fetchChannels']),
     ...mapActions('module-example', ['updateState']),
     ...mapActions('module-example', ['userStatusChange']),
+    ...mapActions('module-example', ['fetchChannelMessages']),
     toggleLeftDrawer() {
       this.leftDrawerOpen = !this.leftDrawerOpen;
     },
@@ -251,10 +253,39 @@ export default {
       const username = this.username;
       this.socket.emit('join-command', { channelName, channelType, username });
     },
-    userStatusChanged(status) {
+    async userStatusChanged(status) {
       console.log('User status changed:', status);
-      this.socket.emit('userStatus', status);
+      
+      if (status === 'offline') {
+        if (this.socket) {
+          this.socket.disconnect();
+          this.socket = null;
+        }
+      } else if (status === 'online') {
+        if (!this.socket) {
+          this.setupSocket();
+        } else if (!this.socket.connected) {
+          this.socket.disconnect();
+          this.socket = null;
+          this.setupSocket();
+        }
+        
+        await Promise.all([
+          this.fetchChannels(),
+          this.fetchChannelUsers(this.selectedChannel),
+          this.fetchChannelMessages(this.selectedChannel),
+        ]);
+
+        this.channels.forEach((channel) => {
+        this.joinChannel(channel.id);
+        });
+      }
+      
+      if (this.socket && this.socket.connected) {
+        this.socket.emit('userStatus', status);
+      }
     },
+
   },
 };
 </script>
