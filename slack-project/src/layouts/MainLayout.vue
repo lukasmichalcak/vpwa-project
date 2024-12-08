@@ -30,6 +30,7 @@
             @cancel-command="handleCancelCommand"
             @join-command="handleJoinCommand"
             @invite-command="handleInviteCommand"
+            @kick-command="handleKickCommand"
             @join-channel="joinChannel"
         /></KeepAlive>
       </q-drawer>
@@ -295,6 +296,21 @@ export default {
           await this.fetchChannelUsers(channel.id);
         }
       });
+
+      this.socket.on('user-kicked-from-channel', async (data) => {
+        const { channel, kickee } = data;
+
+        if (this.userID == kickee.id) {
+          await this.fetchChannels();
+          if (this.channels && this.channels.length > 0) {
+            this.triggerSetSelectedChannelEvent(this.channels[0].id);
+          } else {
+            //TODO handle empty channel list
+          }
+        } else if (this.selectedChannel == channel.id) {
+          await this.fetchChannelUsers(channel.id);
+        }
+      });
     },
 
     triggerSetSelectedChannelEvent(channelId) {
@@ -348,9 +364,10 @@ export default {
         username,
       });
     },
-    handleKickCommand(channelName, channelType) {
+    handleKickCommand(kickee) {
       const username = this.username;
-      this.socket.emit('kick-command', { channelName, channelType, username });
+      const channelId = this.selectedChannel;
+      this.socket.emit('kick-command', { channelId, username, kickee });
     },
     //---------------------------------- TODO
     async userStatusChanged(status) {

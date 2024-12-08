@@ -253,4 +253,112 @@ export default class CommandsService {
       return { success: false, message: 'An error occurred while processing your request.' }
     }
   }
+
+  public async kick(channel_id: number, username: string, kickee: string) {
+    try {
+      console.log(channel_id, username, kickee)
+      const user = await User.findByOrFail('username', username)
+      console.log('user: ', user)
+      if (!user) {
+        return { success: false, message: `User ${username} not found.` }
+      }
+
+      const kickeeUser = await User.findByOrFail('username', kickee)
+      console.log('kickeeUser: ', kickeeUser)
+      if (!kickeeUser) {
+        return { success: false, message: `KickeeUser ${kickeeUser} not found.` }
+      }
+
+      let channel = await Channel.query().where('id', channel_id).first()
+      console.log('channel: ', channel)
+
+      if (!channel) {
+        return { success: false, message: `Channel ${channel_id} not found.` }
+      }
+
+      if (kickeeUser.id === channel.adminId) {
+        return {
+          success: false,
+          message: `Admin (${kickee}) cannot be kicked from channel ${channel_id}.`,
+        }
+      }
+
+      if (user.id === channel.adminId) {
+        let blacklistEntry = await Blacklist.query()
+          .where('user_id', kickeeUser.id)
+          .andWhere('channel_id', channel.id)
+          .first()
+
+        if (blacklistEntry) {
+          blacklistEntry.banned = true
+          await blacklistEntry.save()
+        } else {
+          blacklistEntry = await Blacklist.create({
+            userId: kickeeUser.id,
+            channelId: channel.id,
+            votekicks: 0,
+            banned: true,
+          })
+        }
+
+        await Whitelist.query()
+          .where('user_id', kickeeUser.id)
+          .andWhere('channel_id', channel.id)
+          .delete()
+
+        return {
+          success: true,
+          message: `Admin ${user.username} kicked ${kickee} from channel ${channel.name}.`,
+          user: user,
+          channel: channel,
+          kickeeUser: kickeeUser,
+        }
+      } else {
+        if (channel.channelType === 'private') {
+          return {
+            success: false,
+            message: `Non-admins cannot kick users from private channels.`,
+          }
+        } else {
+          let blacklistEntry = await Blacklist.query()
+            .where('user_id', kickeeUser.id)
+            .andWhere('channel_id', channel.id)
+            .first()
+
+          if (blacklistEntry) {
+            blacklistEntry.votekicks = (blacklistEntry.votekicks || 0) + 1
+
+            if (blacklistEntry.votekicks >= 3) {
+              blacklistEntry.banned = true
+            }
+
+            await blacklistEntry.save()
+          } else {
+            blacklistEntry = await Blacklist.create({
+              userId: kickeeUser.id,
+              channelId: channel.id,
+              votekicks: 1,
+              banned: false,
+            })
+          }
+
+          await Whitelist.query()
+            .where('user_id', kickeeUser.id)
+            .andWhere('channel_id', channel.id)
+            .delete()
+
+          return {
+            success: true,
+            message: `${kickee} was kicked from channel ${channel.name}, votekicks: ${blacklistEntry.votekicks}, is banned: ${blacklistEntry.banned}.`,
+            user: user,
+            channel: channel,
+            kickeeUser: kickeeUser,
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error joining channel:', error)
+      return { success: false, message: 'An error occurred while processing your request.' }
+    }
+  }
 }

@@ -49,4 +49,6 @@ export const middleware = router.named({
 import ChannelCleanupService from '#services/cleanup_service'
 
 // Start cleanup service when server starts
-ChannelCleanupService.startCleanupInterval()
+if (process.argv.includes('serve')) {
+  ChannelCleanupService.startCleanupInterval()
+}

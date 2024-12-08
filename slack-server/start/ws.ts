@@ -159,6 +159,37 @@ app.ready(() => {
       }
     })
 
+    socket.on('kick-command', async (data) => {
+      const { channelId, username, kickee } = data
+      const commandService = new CommandsService()
+      const result = await commandService.kick(channelId, username, kickee)
+      if (result.success) {
+        const channel = result.channel
+
+        if (channel) {
+          const kickeeSocketId = userSockets[kickee]
+          if (kickeeSocketId) {
+            const kickeeSocket = io.sockets.sockets.get(kickeeSocketId)
+            if (kickeeSocket) {
+              kickeeSocket.join(`channel-${channelId}`)
+              console.log(`Kickee ${kickee} joined channel-${channelId}`)
+            } else {
+              console.log(`Kickee ${kickee} is not currently connected.`)
+            }
+          }
+
+          io.to(`channel-${channelId}`).emit('user-kicked-from-channel', {
+            channel: result.channel,
+            kickee: result.kickeeUser,
+          })
+        } else {
+          console.log('Failed to locate the /kick channel')
+        }
+      } else {
+        console.log('Failed to kick user')
+      }
+    })
+
     socket.on('userStatus', (data) => {
       joinedChannels.forEach((channelId) => {
         io.to(`channel-${channelId}`).emit('userStatus', {

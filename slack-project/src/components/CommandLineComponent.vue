@@ -74,8 +74,8 @@ export default {
         this.$emit('revoke-command', channelName);
       } else if (this.text.startsWith('/kick')) {
         const parts = this.text.split(' ');
-        const channelName = parts[1];
-        this.$emit('kick-command', channelName);
+        const kickee = parts[1];
+        this.$emit('kick-command', kickee);
       }
       // -------------------------------------- handle commands
       else {

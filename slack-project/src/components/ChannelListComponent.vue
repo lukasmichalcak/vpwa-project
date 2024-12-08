@@ -92,24 +92,11 @@
         <div class="text-h6">Kick Users</div>
       </q-card-section>
       <q-card-section>
-        <q-list bordered>
-          <q-item v-for="user in genericUsers" :key="user.username">
-            <q-item-section>
-              <q-item-label>{{ user.username }}</q-item-label>
-              <q-item-label caption>Votes to Kick: 0/3</q-item-label>
-            </q-item-section>
-            <q-item-section side>
-              <q-btn
-                color="negative"
-                label="Kick"
-                @click="kickUser(user.username)"
-              />
-            </q-item-section>
-          </q-item>
-        </q-list>
+        <q-input v-model="kickUsername" label="Enter Username" filled />
       </q-card-section>
       <q-card-actions align="right">
-        <q-btn flat label="Close" @click="showKickPopup = false" />
+        <q-btn flat label="Cancel" @click="showKickPopup = false" />
+        <q-btn color="primary" label="Kick" @click="kickUser" />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -146,7 +133,13 @@
 import { mapGetters, mapActions } from 'vuex';
 
 export default {
-  emits: ['cancel-command', 'join-command', 'join-channel', 'invite-command'],
+  emits: [
+    'cancel-command',
+    'join-command',
+    'join-channel',
+    'invite-command',
+    'kick-command',
+  ],
   props: ['setSelectedChannelEvent'],
   data() {
     return {
@@ -162,6 +155,7 @@ export default {
       transmit: null,
       subscription: null,
       inviteUsername: null,
+      kickUsername: null,
     };
   },
 
@@ -209,6 +203,11 @@ export default {
     async inviteUser() {
       const invitee = this.inviteUsername;
       this.$emit('invite-command', invitee);
+    },
+
+    async kickUser() {
+      const kickee = this.kickUsername;
+      this.$emit('kick-command', kickee);
     },
 
     async deleteChannel() {
