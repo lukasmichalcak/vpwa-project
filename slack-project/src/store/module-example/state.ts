@@ -25,6 +25,7 @@ export interface ExampleStateInterface {
   messages: object[];
   users: object[];
   typingMessage: object[];
+  notificationSetting: string;
   userChannels: object[];
   unfinished_messages: object[];
   userStatusChange: object[];
@@ -47,6 +48,7 @@ function state(): ExampleStateInterface {
     messages: [],
     users: [],
     typingMessage: [],
+    notificationSetting: 'all',
     userStatusChange: [],
     userChannels: [],
     unfinished_messages: [],

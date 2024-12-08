@@ -28,8 +28,8 @@
             clickable
             v-ripple
             :class="{
-              'bg-warning': notification.id % 3 == 0,
-              'bg-white': notification.id % 3 !== 0,
+              'bg-warning': notification.messageText.includes(`@${username}`),
+              'bg-white': !notification.messageText.includes(`@${username}`)
             }"
           >
             <q-item-section avatar>
@@ -59,6 +59,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+import { mapActions } from 'vuex';
 import { mapGetters } from 'vuex';
 
 interface Notification {
@@ -99,13 +100,22 @@ export default defineComponent({
         });
       }
     },
+    notificationReceptionStatus(newValue) {
+    const setting = newValue === 'tag-only' ? 'Tag-only' : 'all';
+    this.setNotificationSetting(setting);
+  }
   },
 
   methods: {
+    ...mapActions('module-example', ['setNotificationSetting']),
     removeNotification(id: number) {
       this.notifications = this.notifications.filter(
         (notification) => notification.id !== id
       );
+    },
+
+    isMentioned(message: string) {
+      return message.includes(`@${this.username}`);
     },
     
     getChannelName(channelId: number): string {

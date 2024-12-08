@@ -1,6 +1,8 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import Message from '#models/message'
 import User from '#models/user'
+import Channel from '#models/channel'
+import { DateTime } from 'luxon'
 
 export default class MessagesController {
   async getChannelMessages({ request, response }: HttpContext) {
@@ -34,6 +36,10 @@ export default class MessagesController {
         authorId: user.id,
         text,
       })
+
+      await Channel.query()
+        .where('id', channelId)
+        .update({ last_message_at: DateTime.now().toSQL() })
 
       return response.status(201).json(message)
     } catch (error) {
