@@ -12,9 +12,7 @@
             SKRUPULUS
           </q-toolbar-title>
           <NotificationsComponent />
-          <UserAvatarComponent 
-          @userStatusChanged="userStatusChanged"
-          />
+          <UserAvatarComponent @userStatusChanged="userStatusChanged" />
         </q-toolbar>
       </q-header>
 
@@ -29,6 +27,10 @@
         <KeepAlive
           ><ChannelListComponent
             :setSelectedChannelEvent="setSelectedChannelEvent"
+            @cancel-command="handleCancelCommand"
+            @join-command="handleJoinCommand"
+            @invite-command="handleInviteCommand"
+            @kick-command="handleKickCommand"
             @join-channel="joinChannel"
         /></KeepAlive>
       </q-drawer>
@@ -66,6 +68,11 @@
           @send-message="sendMessage"
           @typing="typing"
           @join-command="handleJoinCommand"
+          @quit-command="handleQuitCommand"
+          @cancel-command="handleCancelCommand"
+          @invite-command="handleInviteCommand"
+          @revoke-command="handleRevokeCommand"
+          @kick-command="handleKickCommand"
         />
       </q-footer>
     </q-layout>
@@ -144,6 +151,7 @@ export default {
     ...mapGetters('module-example', ['state']),
     ...mapGetters('module-example', ['notificationSetting']),
     ...mapGetters('module-example', ['channels']),
+    ...mapGetters('module-example', ['userID']),
   },
 
   methods: {
@@ -155,6 +163,8 @@ export default {
     ...mapActions('module-example', ['updateState']),
     ...mapActions('module-example', ['userStatusChange']),
     ...mapActions('module-example', ['fetchChannelMessages']),
+    ...mapActions('module-example', ['updateChannelListForInvitee']),
+    ...mapActions('module-example', ['handleEmptyChannelList']),
     toggleLeftDrawer() {
       this.leftDrawerOpen = !this.leftDrawerOpen;
     },
@@ -191,20 +201,31 @@ export default {
         this.setNewMessage(data);
         if (
           data.author.username !== this.username &&
-          Notification.permission === 'granted' && !AppVisibility.appVisible && this.state === 'online' &&
+          Notification.permission === 'granted' &&
+          !AppVisibility.appVisible &&
+          this.state === 'online' &&
           this.notificationSetting === 'all'
         ) {
           new Notification(`New message from ${data.author.username}`, {
-            body: data.text.length > 30 ? data.text.substring(0, 30) + '...': data.text,
+            body:
+              data.text.length > 30
+                ? data.text.substring(0, 30) + '...'
+                : data.text,
             icon: this.verifierLogo,
           });
         } else if (
           data.author.username !== this.username &&
-          Notification.permission === 'granted' && !AppVisibility.appVisible && this.state === 'online' &&
-          this.notificationSetting === 'Tag-only' && data.text.includes(`@${this.username}`)
+          Notification.permission === 'granted' &&
+          !AppVisibility.appVisible &&
+          this.state === 'online' &&
+          this.notificationSetting === 'Tag-only' &&
+          data.text.includes(`@${this.username}`)
         ) {
           new Notification(`New message from ${data.author.username}`, {
-            body: data.text.length > 30 ? data.text.substring(0, 30) + '...': data.text,
+            body:
+              data.text.length > 30
+                ? data.text.substring(0, 30) + '...'
+                : data.text,
             icon: this.verifierLogo,
           });
         }
@@ -218,15 +239,78 @@ export default {
         console.log('User status:', data);
         this.userStatusChange(data);
       });
+
       this.socket.on('user-joined-channel', async (data) => {
-        const { channel } = data;
+        const { channel, user } = data;
         if (channel.id == this.selectedChannel) {
           // needs to add this new member
           await this.fetchChannelUsers(channel.id);
         } else {
-          this.fetchChannels();
+          if (this.userID == user.id) {
+            await this.fetchChannels();
+            this.triggerSetSelectedChannelEvent(channel.id);
+          }
         }
-        this.triggerSetSelectedChannelEvent(channel.id);
+      });
+
+      this.socket.on('channel-deleted', async () => {
+        await this.fetchChannels();
+        if (this.channels && this.channels.length > 0) {
+          this.triggerSetSelectedChannelEvent(this.channels[0].id);
+        } else {
+          await this.handleEmptyChannelList();
+        }
+      });
+
+      this.socket.on('user-left-channel', async (data) => {
+        const { channel, user } = data;
+        if (channel.id == this.selectedChannel) {
+          if (this.userID == user.id) {
+            await this.fetchChannels();
+            if (this.channels && this.channels.length > 0) {
+              this.triggerSetSelectedChannelEvent(this.channels[0].id);
+            } else {
+              await this.handleEmptyChannelList();
+            }
+          } else {
+            await this.fetchChannelUsers(channel.id);
+          }
+        } else {
+          if (this.userID == user.id) {
+            await this.fetchChannels();
+            if (this.channels && this.channels.length > 0) {
+              this.triggerSetSelectedChannelEvent(this.channels[0].id);
+            } else {
+              await this.handleEmptyChannelList();
+            }
+          }
+        }
+      });
+
+      this.socket.on('user-invited-to-channel', async (data) => {
+        const { channel, invitee } = data;
+
+        if (this.userID == invitee.id) {
+          await this.updateChannelListForInvitee(channel.id);
+          this.triggerSetSelectedChannelEvent(channel.id);
+        } else if (this.selectedChannel == channel.id) {
+          await this.fetchChannelUsers(channel.id);
+        }
+      });
+
+      this.socket.on('user-kicked-from-channel', async (data) => {
+        const { channel, kickee } = data;
+
+        if (this.userID == kickee.id) {
+          await this.fetchChannels();
+          if (this.channels && this.channels.length > 0) {
+            this.triggerSetSelectedChannelEvent(this.channels[0].id);
+          } else {
+            await this.handleEmptyChannelList();
+          }
+        } else if (this.selectedChannel == channel.id) {
+          await this.fetchChannelUsers(channel.id);
+        }
       });
     },
 
@@ -253,9 +337,42 @@ export default {
       const username = this.username;
       this.socket.emit('join-command', { channelName, channelType, username });
     },
+    handleQuitCommand() {
+      const username = this.username;
+      const channelId = this.selectedChannel;
+      this.socket.emit('quit-command', { channelId, username });
+    },
+    handleCancelCommand() {
+      const username = this.username;
+      const channelId = this.selectedChannel;
+      this.socket.emit('cancel-command', { channelId, username });
+    },
+    handleInviteCommand(invitee) {
+      const username = this.username;
+      const channelId = this.selectedChannel;
+      this.socket.emit('invite-command', {
+        channelId,
+        username,
+        invitee,
+      });
+    },
+    handleRevokeCommand(revokee) {
+      const username = this.username;
+      const channelId = this.selectedChannel;
+      this.socket.emit('revoke-command', {
+        channelId,
+        username,
+        revokee,
+      });
+    },
+    handleKickCommand(kickee) {
+      const username = this.username;
+      const channelId = this.selectedChannel;
+      this.socket.emit('kick-command', { channelId, username, kickee });
+    },
     async userStatusChanged(status) {
       console.log('User status changed:', status);
-      
+
       if (status === 'offline') {
         if (this.socket) {
           this.socket.disconnect();
@@ -269,7 +386,7 @@ export default {
           this.socket = null;
           this.setupSocket();
         }
-        
+
         await Promise.all([
           this.fetchChannels(),
           this.fetchChannelUsers(this.selectedChannel),
@@ -277,15 +394,14 @@ export default {
         ]);
 
         this.channels.forEach((channel) => {
-        this.joinChannel(channel.id);
+          this.joinChannel(channel.id);
         });
       }
-      
+
       if (this.socket && this.socket.connected) {
         this.socket.emit('userStatus', status);
       }
     },
-
   },
 };
 </script>

@@ -23,7 +23,7 @@ const mutation: MutationTree<ExampleStateInterface> = {
     state.users = users;
   },
 
-  SET_SELECTED_CHANNEL(state, selectedChannel: number) {
+  SET_SELECTED_CHANNEL(state, selectedChannel: number | null) {
     state.selectedChannel = selectedChannel;
   },
 
