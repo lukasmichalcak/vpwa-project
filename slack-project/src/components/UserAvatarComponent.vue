@@ -49,7 +49,7 @@ export default {
         return this.state;
       },
       set(value) {
-        console.log('status:', value);
+        this.$emit('userStatusChanged', value);
         this.updateState(value);
       },
     },
@@ -65,10 +65,6 @@ export default {
         console.error('Logout failed:', error);
       }
     },
-  },
-  created() {
-    console.log('state:', this.state);
-    console.log('username:', this.username);
   },
 };
 </script>

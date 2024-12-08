@@ -45,7 +45,7 @@
             style="max-width: 75%"
           >
             <q-chat-message
-              :name="message.name"
+              :name="message.author.username"
               :avatar="message.avatar"
               text-color="white"
               :bg-color="getMessageBgColor(message)"

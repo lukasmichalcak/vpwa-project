@@ -12,7 +12,9 @@
             SKRUPULUS
           </q-toolbar-title>
           <NotificationsComponent />
-          <UserAvatarComponent />
+          <UserAvatarComponent 
+          @userStatusChanged="userStatusChanged"
+          />
         </q-toolbar>
       </q-header>
 
@@ -81,6 +83,7 @@ import NotificationsComponent from 'src/components/NotificationsComponent.vue';
 
 import { mapActions, mapGetters } from 'vuex';
 import { io } from 'socket.io-client';
+import { AppVisibility } from 'quasar';
 
 export default {
   components: {
@@ -102,7 +105,9 @@ export default {
     };
   },
   created() {
-    this.me();
+    this.me().then(() => {
+      this.setupSocket();
+    });
     if (!this.isAuthenticated) {
       this.$router.push({ name: 'login' });
     }
@@ -122,10 +127,10 @@ export default {
     //   this.changeChannel(newSelectedChannel);
     // },
   },
-  mounted() {
-    this.setupSocket();
-    this.currentChannel = this.selectedChannel;
-  },
+  // mounted() {
+  //   this.setupSocket();
+  //   this.currentChannel = this.selectedChannel;
+  // },
   beforeUnmount() {
     if (this.socket) {
       this.socket.disconnect();
@@ -136,6 +141,7 @@ export default {
     ...mapGetters('module-example', ['selectedChannel']),
     ...mapGetters('module-example', ['typingUsers']),
     ...mapGetters('module-example', ['username']),
+    ...mapGetters('module-example', ['state']),
   },
 
   methods: {
@@ -144,6 +150,8 @@ export default {
     ...mapActions('module-example', ['typingMessage']),
     ...mapActions('module-example', ['fetchChannelUsers']),
     ...mapActions('module-example', ['fetchChannels']),
+    ...mapActions('module-example', ['updateState']),
+    ...mapActions('module-example', ['userStatusChange']),
     toggleLeftDrawer() {
       this.leftDrawerOpen = !this.leftDrawerOpen;
     },
@@ -166,17 +174,24 @@ export default {
     },
 
     setupSocket() {
-      this.socket = io('http://localhost:3333');
+      console.log('Setting up socket', this.username);
+      this.socket = io('http://localhost:3333', {
+        query: {
+          username: this.username,
+        },
+      });
+      this.updateState('online');
 
       this.socket.on('message', (data) => {
         console.log('Received message:', data);
+        console.log('Current state:', this.state);
         this.setNewMessage(data);
         if (
           data.author.username !== this.username &&
-          Notification.permission === 'granted'
+          Notification.permission === 'granted' && !AppVisibility.appVisible && this.state === 'online'
         ) {
           new Notification(`New message from ${data.author.username}`, {
-            body: data.text,
+            body: data.text.length > 30 ? data.text.substring(0, 30) + '...': data.text,
             icon: this.verifierLogo,
           });
         }
@@ -184,6 +199,11 @@ export default {
 
       this.socket.on('typing', (data) => {
         this.typingMessage(data);
+      });
+
+      this.socket.on('userStatus', (data) => {
+        console.log('User status:', data);
+        this.userStatusChange(data);
       });
       this.socket.on('user-joined-channel', async (data) => {
         const { channel } = data;
@@ -219,6 +239,10 @@ export default {
     handleJoinCommand(channelName, channelType) {
       const username = this.username;
       this.socket.emit('join-command', { channelName, channelType, username });
+    },
+    userStatusChanged(status) {
+      console.log('User status changed:', status);
+      this.socket.emit('userStatus', status);
     },
   },
 };
