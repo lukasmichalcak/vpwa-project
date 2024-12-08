@@ -179,6 +179,12 @@ const actions: ActionTree<ExampleStateInterface, StateInterface> = {
     }
   },
 
+  async handleEmptyChannelList({ commit }) {
+    commit('SET_CHANNELS', []);
+    commit('SET_MESSAGES', []);
+    commit('SET_SELECTED_CHANNEL', null);
+  },
+
   async storeMessage({ getters }, { channelId, text, username }) {
     console.log('storeMessage', { channelId, text, username });
     const response = await fetch(

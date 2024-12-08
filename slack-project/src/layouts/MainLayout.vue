@@ -164,6 +164,7 @@ export default {
     ...mapActions('module-example', ['userStatusChange']),
     ...mapActions('module-example', ['fetchChannelMessages']),
     ...mapActions('module-example', ['updateChannelListForInvitee']),
+    ...mapActions('module-example', ['handleEmptyChannelList']),
     toggleLeftDrawer() {
       this.leftDrawerOpen = !this.leftDrawerOpen;
     },
@@ -257,7 +258,7 @@ export default {
         if (this.channels && this.channels.length > 0) {
           this.triggerSetSelectedChannelEvent(this.channels[0].id);
         } else {
-          //TODO handle empty channel list
+          await this.handleEmptyChannelList();
         }
       });
 
@@ -269,7 +270,7 @@ export default {
             if (this.channels && this.channels.length > 0) {
               this.triggerSetSelectedChannelEvent(this.channels[0].id);
             } else {
-              //TODO handle empty channel list
+              await this.handleEmptyChannelList();
             }
           } else {
             await this.fetchChannelUsers(channel.id);
@@ -280,7 +281,7 @@ export default {
             if (this.channels && this.channels.length > 0) {
               this.triggerSetSelectedChannelEvent(this.channels[0].id);
             } else {
-              //TODO handle empty channel list
+              await this.handleEmptyChannelList();
             }
           }
         }
@@ -305,7 +306,7 @@ export default {
           if (this.channels && this.channels.length > 0) {
             this.triggerSetSelectedChannelEvent(this.channels[0].id);
           } else {
-            //TODO handle empty channel list
+            await this.handleEmptyChannelList();
           }
         } else if (this.selectedChannel == channel.id) {
           await this.fetchChannelUsers(channel.id);
