@@ -66,8 +66,8 @@ export default {
         this.$emit('cancel-command');
       } else if (this.text.startsWith('/invite')) {
         const parts = this.text.split(' ');
-        const channelName = parts[1];
-        this.$emit('invite-command', channelName);
+        const invitee = parts[1];
+        this.$emit('invite-command', invitee);
       } else if (this.text.startsWith('/revoke')) {
         const parts = this.text.split(' ');
         const channelName = parts[1];

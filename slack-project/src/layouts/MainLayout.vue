@@ -29,6 +29,8 @@
             :setSelectedChannelEvent="setSelectedChannelEvent"
             @cancel-command="handleCancelCommand"
             @join-command="handleJoinCommand"
+            @invite-command="handleInviteCommand"
+            @join-channel="joinChannel"
         /></KeepAlive>
       </q-drawer>
 
@@ -158,6 +160,7 @@ export default {
     ...mapActions('module-example', ['fetchChannels']),
     ...mapActions('module-example', ['updateState']),
     ...mapActions('module-example', ['userStatusChange']),
+    ...mapActions('module-example', ['updateChannelListForInvitee']),
     toggleLeftDrawer() {
       this.leftDrawerOpen = !this.leftDrawerOpen;
     },
@@ -216,6 +219,7 @@ export default {
         console.log('User status:', data);
         this.userStatusChange(data);
       });
+
       this.socket.on('user-joined-channel', async (data) => {
         const { channel, user } = data;
         if (channel.id == this.selectedChannel) {
@@ -262,6 +266,17 @@ export default {
           }
         }
       });
+
+      this.socket.on('user-invited-to-channel', async (data) => {
+        const { channel, invitee } = data;
+
+        if (this.userID == invitee.id) {
+          await this.updateChannelListForInvitee(channel.id);
+          this.triggerSetSelectedChannelEvent(channel.id);
+        } else if (this.selectedChannel == channel.id) {
+          await this.fetchChannelUsers(channel.id);
+        }
+      });
     },
 
     triggerSetSelectedChannelEvent(channelId) {
@@ -298,12 +313,13 @@ export default {
       this.socket.emit('cancel-command', { channelId, username });
     },
     //---------------------------------- TODO
-    handleInviteCommand(channelName, channelType) {
+    handleInviteCommand(invitee) {
       const username = this.username;
+      const channelId = this.selectedChannel;
       this.socket.emit('invite-command', {
-        channelName,
-        channelType,
+        channelId,
         username,
+        invitee,
       });
     },
     handleRevokeCommand(channelName, channelType) {

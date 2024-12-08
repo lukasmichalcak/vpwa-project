@@ -169,4 +169,88 @@ export default class CommandsService {
       return { success: false, message: 'An error occurred while processing your request.' }
     }
   }
+
+  public async invite(channel_id: number, username: string, invitee: string) {
+    try {
+      console.log(channel_id, username, invitee)
+      const user = await User.findByOrFail('username', username)
+      console.log('user: ', user)
+      if (!user) {
+        return { success: false, message: `User ${username} not found.` }
+      }
+
+      const inviteeUser = await User.findByOrFail('username', invitee)
+      console.log('inviteeUser: ', inviteeUser)
+      if (!inviteeUser) {
+        return { success: false, message: `InviteeUser ${invitee} not found.` }
+      }
+
+      let channel = await Channel.query().where('id', channel_id).first()
+      console.log('channel: ', channel)
+
+      if (!channel) {
+        return { success: false, message: `Channel ${channel_id} not found.` }
+      }
+
+      const isInviteeInChannel = await channel
+        .related('users')
+        .query()
+        .where('users.id', inviteeUser.id)
+        .first()
+
+      if (isInviteeInChannel) {
+        return {
+          success: false,
+          message: `Invitee ${invitee} is already a member of channel ${channel_id}.`,
+        }
+      }
+
+      if (user.id === channel.adminId) {
+        await Blacklist.query()
+          .where('userId', inviteeUser.id)
+          .andWhere('channelId', channel_id)
+          .delete()
+
+        await channel.related('users').attach([inviteeUser.id])
+
+        return {
+          success: true,
+          message: `Invitee ${invitee} has been added to channel ${channel_id} by admin ${username}.`,
+          user: user,
+          inviteeUser: inviteeUser,
+          channel: channel,
+        }
+      } else {
+        if (channel.channelType === 'private') {
+          return {
+            success: false,
+            message: `Non-admin ${username} cannot invite users to a private channel.`,
+          }
+        }
+        const blacklistEntry = await Blacklist.query()
+          .where('userId', inviteeUser.id)
+          .andWhere('channelId', channel_id)
+          .first()
+
+        if (blacklistEntry && blacklistEntry.banned) {
+          return {
+            success: false,
+            message: `Invitee ${invitee} is banned from channel ${channel_id}.`,
+          }
+        }
+        await channel.related('users').attach([inviteeUser.id])
+
+        return {
+          success: true,
+          message: `Invitee ${invitee} has been added to channel ${channel_id} by user ${username}.`,
+          user: user,
+          inviteeUser: inviteeUser,
+          channel: channel,
+        }
+      }
+    } catch (error) {
+      console.error('Error joining channel:', error)
+      return { success: false, message: 'An error occurred while processing your request.' }
+    }
+  }
 }

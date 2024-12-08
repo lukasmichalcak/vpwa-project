@@ -4,6 +4,8 @@ import server from '@adonisjs/core/services/server'
 import CommandsService from '#services/commands'
 import User from '#models/user'
 
+const userSockets: { [key: string]: string } = {}
+
 app.ready(() => {
   const io = new Server(server.getNodeServer(), {
     cors: {
@@ -16,6 +18,10 @@ app.ready(() => {
     const name = socket.handshake.query.username
     const joinedChannels = new Set() // Track joined channels
     console.log('A new connection', socket.id)
+
+    if (typeof name === 'string') {
+      userSockets[name] = socket.id
+    }
 
     socket.on('join', async (channelId) => {
       socket.join(`channel-${channelId}`)
@@ -122,6 +128,37 @@ app.ready(() => {
       }
     })
 
+    socket.on('invite-command', async (data) => {
+      const { channelId, username, invitee } = data
+      const commandService = new CommandsService()
+      const result = await commandService.invite(channelId, username, invitee)
+      if (result.success) {
+        const channel = result.channel
+
+        if (channel) {
+          const inviteeSocketId = userSockets[invitee]
+          if (inviteeSocketId) {
+            const inviteeSocket = io.sockets.sockets.get(inviteeSocketId)
+            if (inviteeSocket) {
+              inviteeSocket.join(`channel-${channelId}`)
+              console.log(`Invitee ${invitee} joined channel-${channelId}`)
+            } else {
+              console.log(`Invitee ${invitee} is not currently connected.`)
+            }
+          }
+
+          io.to(`channel-${channelId}`).emit('user-invited-to-channel', {
+            channel: result.channel,
+            invitee: result.inviteeUser,
+          })
+        } else {
+          console.log('Failed to locate the joined channel')
+        }
+      } else {
+        console.log('Failed to join user')
+      }
+    })
+
     socket.on('userStatus', (data) => {
       joinedChannels.forEach((channelId) => {
         io.to(`channel-${channelId}`).emit('userStatus', {
@@ -150,6 +187,9 @@ app.ready(() => {
 
             console.log(`User ${name} status set to offline`)
           }
+        }
+        if (typeof name === 'string') {
+          delete userSockets[name]
         }
       } catch (error) {
         console.error('Error updating user status:', error)

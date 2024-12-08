@@ -157,6 +157,28 @@ const actions: ActionTree<ExampleStateInterface, StateInterface> = {
     commit('SET_USERS', users);
   },
 
+  async updateChannelListForInvitee({ commit, getters }, newChannelId) {
+    try {
+      const response = await fetch('http://localhost:3333/channelList', {
+        headers: { Authorization: `Bearer ${getters.token}` },
+      });
+      const channels: Channel[] = await response.json();
+
+      const index = channels.findIndex(
+        (channel) => channel.id === newChannelId
+      );
+      if (index !== -1) {
+        const [newChannel] = channels.splice(index, 1);
+        newChannel.isnew = true;
+        channels.unshift(newChannel);
+      }
+
+      commit('SET_CHANNELS', channels);
+    } catch (error) {
+      console.error('Error updating channel list for invitee:', error);
+    }
+  },
+
   async storeMessage({ getters }, { channelId, text, username }) {
     console.log('storeMessage', { channelId, text, username });
     const response = await fetch(
@@ -348,4 +370,12 @@ function transformMessages(
       ? new Date(message.createdAt).toISOString()
       : null,
   }));
+}
+
+interface Channel {
+  id: number;
+  name: string;
+  adminId: number;
+  channelType: string;
+  isnew?: boolean;
 }

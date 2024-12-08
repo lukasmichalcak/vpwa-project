@@ -146,7 +146,7 @@
 import { mapGetters, mapActions } from 'vuex';
 
 export default {
-  emits: ['cancel-command', 'join-command'],
+  emits: ['cancel-command', 'join-command', 'join-channel', 'invite-command'],
   props: ['setSelectedChannelEvent'],
   data() {
     return {
@@ -161,6 +161,7 @@ export default {
       nameErrorMessage: '',
       transmit: null,
       subscription: null,
+      inviteUsername: null,
     };
   },
 
@@ -205,8 +206,19 @@ export default {
       this.$emit('join-command', channelName, channelType);
     },
 
+    async inviteUser() {
+      const invitee = this.inviteUsername;
+      this.$emit('invite-command', invitee);
+    },
+
     async deleteChannel() {
       this.$emit('cancel-command');
+    },
+
+    joinChannels() {
+      this.channels.forEach((channel) => {
+        this.$emit('join-channel', channel.id);
+      });
     },
   },
 
