@@ -13,6 +13,8 @@ export default class extends BaseSchema {
         .references('id')
         .inTable('channels')
         .onDelete('CASCADE')
+      table.integer('votekicks')
+      table.boolean('banned')
     })
   }
 

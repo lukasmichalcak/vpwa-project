@@ -13,7 +13,7 @@ node ace serve --watch
 ```
 
 ```
-node ace db:refresh
+node ace migration:refresh
 ```
 
 ```

@@ -1,6 +1,6 @@
 <template>
   <q-input
-  rounded
+    rounded
     filled
     v-model="text"
     label="Type"
@@ -10,11 +10,7 @@
     @update:model-value="debouncedTyping"
   >
     <template v-slot:append>
-      <q-btn flat
-        round
-        color="white"
-        icon="send"
-        @click="handleEnter" />
+      <q-btn flat round color="white" icon="send" @click="handleEnter" />
     </template>
   </q-input>
 </template>
@@ -24,6 +20,7 @@ import { mapActions, mapGetters } from 'vuex';
 import { debounce } from 'lodash';
 
 export default {
+  emits: ['join-command', 'typing', 'send-message'],
   data() {
     return {
       text: '',
@@ -37,27 +34,43 @@ export default {
     ...mapGetters('module-example', ['username']),
   },
 
-
   methods: {
     ...mapActions('module-example', ['storeMessage']),
     handleEnter() {
       if (this.text.trim() === '') return;
-      this.$emit('send-message', {
-        channelId: this.selectedChannel,
-        text: this.text,
-        author: {
+      // -------------------------------------- handle commands
+      if (this.text.trim() === '/list') {
+        this.$emit('toggleRightDrawer');
+      } else if (this.text.startsWith('/join')) {
+        const parts = this.text.split(' ');
+        let isPrivate = false;
+        if (parts[parts.length - 1] === '[private]') {
+          isPrivate = true;
+          parts.pop();
+        }
+        const channelName = parts.slice(1).join(' ');
+        const channelType = isPrivate ? 'private' : 'public';
+        this.$emit('join-command', channelName, channelType);
+      }
+      // -------------------------------------- handle commands
+      else {
+        this.$emit('send-message', {
+          channelId: this.selectedChannel,
+          text: this.text,
+          author: {
+            username: this.username,
+            id: this.userID,
+          },
+        });
+
+        this.storeMessage({
+          channelId: this.selectedChannel,
+          text: this.text,
           username: this.username,
-          id: this.userID,
-        },
-      });
+        });
+      }
 
       this.typing('');
-
-      this.storeMessage({
-        channelId: this.selectedChannel,
-        text: this.text,
-        username: this.username,
-      });
 
       this.text = '';
     },
@@ -77,5 +90,6 @@ export default {
 
 <style lang="scss">
 .custom-input-text {
- color: white; }
+  color: white;
+}
 </style>

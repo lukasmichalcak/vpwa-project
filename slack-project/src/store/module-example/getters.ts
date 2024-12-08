@@ -53,6 +53,10 @@ const getters: GetterTree<ExampleStateInterface, StateInterface> = {
     return state.messages;
   },
 
+  users(state) {
+    return state.users;
+  },
+
   userChannels(state) {
     return state.userChannels;
   },
