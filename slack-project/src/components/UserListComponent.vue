@@ -24,7 +24,7 @@ export default defineComponent({
   },
 
   computed: {
-    ...mapGetters('module-example', ['users', 'selectedChannel']),
+    ...mapGetters('module-example', ['users', 'selectedChannel','userStatusChange']),
   },
 
   methods: {
@@ -34,6 +34,10 @@ export default defineComponent({
   watch: {
     selectedChannel(newChannel) {
       this.fetchChannelUsers(newChannel);
+    },
+    userStatusChange(newStatus) {
+      this.fetchChannelUsers(this.selectedChannel);
+      console.log('User status changed:', newStatus);
     },
   },
 });

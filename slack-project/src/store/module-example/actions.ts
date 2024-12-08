@@ -179,6 +179,10 @@ const actions: ActionTree<ExampleStateInterface, StateInterface> = {
     commit('SET_TYPING_MESSAGE', data);
   },
 
+  async userStatusChange({ commit }, data) {
+    commit('SET_USER_STATUS_CHANGE', data);
+  },
+
   async setSelectedChannel({ commit }, channelID: number) {
     commit('SET_SELECTED_CHANNEL', channelID);
   },

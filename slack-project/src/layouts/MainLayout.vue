@@ -12,7 +12,9 @@
             SKRUPULUS
           </q-toolbar-title>
           <NotificationsComponent />
-          <UserAvatarComponent />
+          <UserAvatarComponent 
+          @userStatusChanged="userStatusChanged"
+          />
         </q-toolbar>
       </q-header>
 
@@ -149,6 +151,7 @@ export default {
     ...mapActions('module-example', ['fetchChannelUsers']),
     ...mapActions('module-example', ['fetchChannels']),
     ...mapActions('module-example', ['updateState']),
+    ...mapActions('module-example', ['userStatusChange']),
     toggleLeftDrawer() {
       this.leftDrawerOpen = !this.leftDrawerOpen;
     },
@@ -200,6 +203,7 @@ export default {
 
       this.socket.on('userStatus', (data) => {
         console.log('User status:', data);
+        this.userStatusChange(data);
       });
       this.socket.on('user-joined-channel', async (data) => {
         const { channel } = data;
@@ -235,6 +239,10 @@ export default {
     handleJoinCommand(channelName, channelType) {
       const username = this.username;
       this.socket.emit('join-command', { channelName, channelType, username });
+    },
+    userStatusChanged(status) {
+      console.log('User status changed:', status);
+      this.socket.emit('userStatus', status);
     },
   },
 };

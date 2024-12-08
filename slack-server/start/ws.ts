@@ -17,10 +17,28 @@ app.ready(() => {
     const joinedChannels = new Set() // Track joined channels
     console.log('A new connection', socket.id)
 
-    socket.on('join', (channelId) => {
+    socket.on('join', async (channelId) => {
       socket.join(`channel-${channelId}`)
       joinedChannels.add(channelId) // Add to tracking
       console.log(`User ${socket.id} joined channel ${channelId}`)
+      try {
+        if (name) {
+          const user = await User.findBy('username', name)
+          if (user) {
+            user.state = 'online'
+            await user.save()
+
+            io.to(`channel-${channelId}`).emit('userStatus', {
+              channelId,
+              name,
+              state: 'online',
+            })
+            console.log(`User ${name} status set to online`)
+          }
+        }
+      } catch (error) {
+        console.error('Error updating user status:', error)
+      }
     })
 
     socket.on('leave', (channelId) => {
@@ -64,29 +82,14 @@ app.ready(() => {
       }
     })
 
-    socket.on('join-command', async (data) => {
-      const { channelName, channelType, username } = data
-      const commandService = new CommandsService()
-      const result = await commandService.join(channelName, channelType, username)
-      // socket.to(`channel-${data.channelId}`).emit('join-command-result', result)
-      if (result.success) {
-        const channel = result.channel
-
-        if (channel) {
-          const channelId = channel.id
-
-          socket.join(`channel-${channelId}`)
-          console.log(`User ${socket.id} joined channel-${channelId}`)
-          io.to(`channel-${channelId}`).emit('user-joined-channel', {
-            channel: result.channel,
-            user: result.user,
-          })
-        } else {
-          console.log('Failed to locate the joined channel')
-        }
-      } else {
-        console.log('Failed to join user')
-      }
+    socket.on('userStatus', (data) => {
+      joinedChannels.forEach((channelId) => {
+        io.to(`channel-${channelId}`).emit('userStatus', {
+          channelId,
+          name,
+          state: data,
+        })
+      })
     })
 
     socket.on('disconnect', async () => {
