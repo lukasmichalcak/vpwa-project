@@ -11,7 +11,7 @@ export default class MessagesController {
 
       const messages = await Message.query()
         .where('channel_id', channelId)
-        .orderBy('created_at', 'asc')
+        .orderBy('created_at', 'desc')
         .preload('author', (query) => {
           query.select('id', 'username') // Adjust fields as needed
         })

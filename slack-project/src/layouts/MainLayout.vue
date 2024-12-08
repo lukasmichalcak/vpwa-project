@@ -1,6 +1,6 @@
 <template>
   <div v-if="isAuthenticated">
-    <q-layout view="hHh lpr lFr">
+    <q-layout view="hhh LpR lFr">
       <q-header reveal elevated class="bg-primary text-white">
         <q-toolbar>
           <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
@@ -410,7 +410,6 @@ export default {
 .left-drawer,
 .right-drawer,
 .center-content {
-  overflow-y: scroll;
   height: 100vh;
 }
 </style>
