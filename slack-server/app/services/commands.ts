@@ -120,7 +120,52 @@ export default class CommandsService {
         }
       }
     } catch (error) {
-      console.error('Error joining channel:', error)
+      console.error('Error on /cancel channel:', error)
+      return { success: false, message: 'An error occurred while processing your request.' }
+    }
+  }
+
+  public async quit(channelId: number, username: string) {
+    try {
+      console.log(channelId, username)
+      const user = await User.findByOrFail('username', username)
+      console.log('user: ', user)
+
+      let channel = await Channel.query().where('id', channelId).first()
+      console.log('channel: ', channel)
+
+      if (!channel) {
+        return {
+          success: false,
+          message: `ChannelId '${channelId}' incorrect - either bad type or non-existent id.`,
+        }
+      } else {
+        if (!user) {
+          return {
+            success: false,
+            message: `User '${user}' non-existent.`,
+          }
+        } else {
+          if (user.id === channel.adminId) {
+            await Channel.query().where('id', channelId).delete()
+            await Whitelist.query().where('channel_id', channelId).delete()
+            await Blacklist.query().where('channel_id', channelId).delete()
+            return {
+              success: true,
+              message: `Admin ${user.id} deleted channel ${channelId}.`,
+              user: user,
+              channel: channel,
+            }
+          } else {
+            return {
+              success: false,
+              message: `User '${user}' tried to delete channel ${channelId} but is not admin.`,
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error on /quit channel:', error)
       return { success: false, message: 'An error occurred while processing your request.' }
     }
   }

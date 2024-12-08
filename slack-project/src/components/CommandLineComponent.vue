@@ -60,10 +60,8 @@ export default {
         const channelName = parts.slice(1).join(' ');
         const channelType = isPrivate ? 'private' : 'public';
         this.$emit('join-command', channelName, channelType);
-      } else if (this.text.startsWith('/quit')) {
-        const parts = this.text.split(' ');
-        const channelName = parts[1];
-        this.$emit('quit-command', channelName);
+      } else if (this.text.trim() === '/quit') {
+        this.$emit('quit-command');
       } else if (this.text.trim() === '/cancel') {
         this.$emit('cancel-command');
       } else if (this.text.startsWith('/invite')) {

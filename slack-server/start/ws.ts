@@ -101,7 +101,24 @@ app.ready(() => {
           console.log('Failed to locate the /cancel-ed channel')
         }
       } else {
-        console.log('Failed to /cancel user')
+        console.log('Failed to /cancel channel by user')
+      }
+    })
+
+    socket.on('quit-command', async (data) => {
+      const { channelId, username } = data
+      const commandService = new CommandsService()
+      const result = await commandService.quit(channelId, username)
+      if (result.success) {
+        const channel = result.channel
+
+        if (channel) {
+          io.to(`channel-${channelId}`).emit('channel-deleted')
+        } else {
+          console.log('Failed to locate the /quit-ed channel')
+        }
+      } else {
+        console.log('Failed to /quit channel')
       }
     })
 

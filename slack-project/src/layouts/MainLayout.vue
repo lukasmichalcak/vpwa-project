@@ -287,9 +287,10 @@ export default {
       this.socket.emit('join-command', { channelName, channelType, username });
     },
     //---------------------------------- TODO
-    handleQuitCommand(channelName) {
+    handleQuitCommand() {
       const username = this.username;
-      this.socket.emit('quit-command', { channelName, username });
+      const channelId = this.selectedChannel;
+      this.socket.emit('quit-command', { channelId, username });
     },
     handleCancelCommand() {
       const username = this.username;
@@ -298,15 +299,23 @@ export default {
     },
     handleInviteCommand(channelName, channelType) {
       const username = this.username;
-      this.socket.emit('join-command', { channelName, channelType, username });
+      this.socket.emit('invite-command', {
+        channelName,
+        channelType,
+        username,
+      });
     },
     handleRevokeCommand(channelName, channelType) {
       const username = this.username;
-      this.socket.emit('join-command', { channelName, channelType, username });
+      this.socket.emit('revoke-command', {
+        channelName,
+        channelType,
+        username,
+      });
     },
     handleKickCommand(channelName, channelType) {
       const username = this.username;
-      this.socket.emit('join-command', { channelName, channelType, username });
+      this.socket.emit('kick-command', { channelName, channelType, username });
     },
     //---------------------------------- TODO
     userStatusChanged(status) {
