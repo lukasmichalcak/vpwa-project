@@ -355,13 +355,13 @@ export default {
         invitee,
       });
     },
-    //---------------------------------- TODO
-    handleRevokeCommand(channelName, channelType) {
+    handleRevokeCommand(revokee) {
       const username = this.username;
+      const channelId = this.selectedChannel;
       this.socket.emit('revoke-command', {
-        channelName,
-        channelType,
+        channelId,
         username,
+        revokee,
       });
     },
     handleKickCommand(kickee) {
@@ -369,7 +369,6 @@ export default {
       const channelId = this.selectedChannel;
       this.socket.emit('kick-command', { channelId, username, kickee });
     },
-    //---------------------------------- TODO
     async userStatusChanged(status) {
       console.log('User status changed:', status);
 

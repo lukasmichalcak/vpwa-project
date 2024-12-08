@@ -190,6 +190,37 @@ app.ready(() => {
       }
     })
 
+    socket.on('revoke-command', async (data) => {
+      const { channelId, username, revokee } = data
+      const commandService = new CommandsService()
+      const result = await commandService.revoke(channelId, username, revokee)
+      if (result.success) {
+        const channel = result.channel
+
+        if (channel) {
+          const revokeeSocketId = userSockets[revokee]
+          if (revokeeSocketId) {
+            const revokeeSocket = io.sockets.sockets.get(revokeeSocketId)
+            if (revokeeSocket) {
+              revokeeSocket.join(`channel-${channelId}`)
+              console.log(`Revokee ${revokee} joined channel-${channelId}`)
+            } else {
+              console.log(`Revokee ${revokee} is not currently connected.`)
+            }
+          }
+
+          io.to(`channel-${channelId}`).emit('user-kicked-from-channel', {
+            channel: result.channel,
+            kickee: result.revokeeUser, // we use kickee so that we can emit the same event and call the same socket event handler
+          })
+        } else {
+          console.log('Failed to locate the /revoke channel')
+        }
+      } else {
+        console.log('Failed to revoke user')
+      }
+    })
+
     socket.on('userStatus', (data) => {
       joinedChannels.forEach((channelId) => {
         io.to(`channel-${channelId}`).emit('userStatus', {

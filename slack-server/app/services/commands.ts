@@ -361,4 +361,89 @@ export default class CommandsService {
       return { success: false, message: 'An error occurred while processing your request.' }
     }
   }
+
+  public async revoke(channel_id: number, username: string, revokee: string) {
+    try {
+      console.log(channel_id, username, revokee)
+      const user = await User.findByOrFail('username', username)
+      console.log('user: ', user)
+      if (!user) {
+        return { success: false, message: `User ${username} not found.` }
+      }
+
+      const revokeeUser = await User.findByOrFail('username', revokee)
+      console.log('kickeeUser: ', revokeeUser)
+      if (!revokeeUser) {
+        return { success: false, message: `RevokeeUser ${revokeeUser} not found.` }
+      }
+
+      let channel = await Channel.query().where('id', channel_id).first()
+      console.log('channel: ', channel)
+
+      if (!channel) {
+        return { success: false, message: `Channel ${channel_id} not found.` }
+      }
+
+      const isRevokeeInChannel = await channel
+        .related('users')
+        .query()
+        .where('users.id', revokeeUser.id)
+        .first()
+
+      if (!isRevokeeInChannel) {
+        return {
+          success: false,
+          message: `Revokee ${revokee} is not a member of channel ${channel_id}.`,
+        }
+      }
+
+      if (revokeeUser.id === channel.adminId) {
+        return {
+          success: false,
+          message: `Admin (${revokee}) cannot be revoked from channel ${channel_id}.`,
+        }
+      }
+
+      if (user.id === channel.adminId) {
+        let blacklistEntry = await Blacklist.query()
+          .where('user_id', revokeeUser.id)
+          .andWhere('channel_id', channel.id)
+          .first()
+
+        if (blacklistEntry) {
+          blacklistEntry.banned = true
+
+          await blacklistEntry.save()
+        } else {
+          blacklistEntry = await Blacklist.create({
+            userId: revokeeUser.id,
+            channelId: channel.id,
+            votekicks: 0,
+            banned: true,
+          })
+        }
+
+        await Whitelist.query()
+          .where('user_id', revokeeUser.id)
+          .andWhere('channel_id', channel.id)
+          .delete()
+
+        return {
+          success: true,
+          message: `Admin (${username}) revoked user ${revokee} from channel ${channel_id}.`,
+          user: user,
+          channel: channel,
+          revokeeUser: revokeeUser,
+        }
+      } else {
+        return {
+          success: false,
+          message: `Non-admin (${username}) cannot revoked users from channel ${channel_id}.`,
+        }
+      }
+    } catch (error) {
+      console.error('Error joining channel:', error)
+      return { success: false, message: 'An error occurred while processing your request.' }
+    }
+  }
 }

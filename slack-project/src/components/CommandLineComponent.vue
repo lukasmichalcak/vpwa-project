@@ -47,7 +47,6 @@ export default {
     ...mapActions('module-example', ['storeMessage']),
     handleEnter() {
       if (this.text.trim() === '') return;
-      // -------------------------------------- handle commands TODO API might change for some
       if (this.text.trim() === '/list') {
         this.$emit('toggleRightDrawer');
       } else if (this.text.startsWith('/join')) {
@@ -70,15 +69,13 @@ export default {
         this.$emit('invite-command', invitee);
       } else if (this.text.startsWith('/revoke')) {
         const parts = this.text.split(' ');
-        const channelName = parts[1];
-        this.$emit('revoke-command', channelName);
+        const revokee = parts[1];
+        this.$emit('revoke-command', revokee);
       } else if (this.text.startsWith('/kick')) {
         const parts = this.text.split(' ');
         const kickee = parts[1];
         this.$emit('kick-command', kickee);
-      }
-      // -------------------------------------- handle commands
-      else {
+      } else {
         this.$emit('send-message', {
           channelId: this.selectedChannel,
           text: this.text,
