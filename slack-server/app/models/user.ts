@@ -32,7 +32,7 @@ export default class User extends compose(BaseModel, AuthFinder) {
   declare password: string
 
   @column()
-  declare state: string | null
+  declare state: 'online' | 'offline' | 'dnd' | null
 
   @column.dateTime({ autoCreate: true })
   declare created_at: DateTime

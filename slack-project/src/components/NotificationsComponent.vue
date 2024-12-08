@@ -59,6 +59,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+import { mapGetters } from 'vuex';
 
 interface Notification {
   id: number;
@@ -75,26 +76,28 @@ export default defineComponent({
     };
   },
 
-  created() {
-    const numberOfNotifications = 10;
-
-    for (let i = 1; i < numberOfNotifications; i++) {
-      this.notifications.push({
-        id: i,
-        channelName: `Channel${numberOfNotifications - i}`,
-        senderUsername: `User${numberOfNotifications - i}`,
-        messageText: `This is the beggining of message${
-          numberOfNotifications - i
-        }...`,
-      });
-    }
-  },
-
   computed: {
+    ...mapGetters('module-example', ['channels']),
+    ...mapGetters('module-example', ['newMessage']),
+    ...mapGetters('module-example', ['username']),
+
     notificationsCount(): string {
       return this.notifications.length > 99
         ? '99+'
         : String(this.notifications.length);
+    },
+  },
+
+  watch: {
+    newMessage(data) {
+      if (data.author.username !== this.username) {
+        this.notifications.push({
+          id: this.notifications.length + 1,
+          channelName: this.getChannelName(data.channelId),
+          senderUsername: data.author.username,
+          messageText: data.text.length > 10 ? data.text.substring(0, 10) + '...': data.text,
+        });
+      }
     },
   },
 
@@ -103,6 +106,11 @@ export default defineComponent({
       this.notifications = this.notifications.filter(
         (notification) => notification.id !== id
       );
+    },
+    
+    getChannelName(channelId: number): string {
+      const channel = this.channels.find((c: { id: number; name: string }) => c.id === channelId);
+      return channel ? channel.name : `Channel ${channelId}`;
     },
   },
 });
